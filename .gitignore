@@ -1,0 +1,5 @@
+.env
+screenshots/
+target/
+web/dist
+vetur.config.js

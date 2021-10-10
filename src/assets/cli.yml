@@ -1,0 +1,29 @@
+name: solend-apy-bot
+version: "1.0"
+args:
+    - server:
+        long: server
+        help: Launches the server for debugging
+        conflicts_with:
+            - twitter
+            - screenshot 
+            - data 
+            - chart
+    - screenshot:
+        short: s
+        long: screenshot
+        help: Takes screenshot and saves it locally
+    - charts:
+        short: c
+        long: charts
+        help: Takes screenshot of the charts and saves them locally
+    - data:
+        short: d
+        long: data
+        help: Saves data in database
+        possible_values: ["MINUTE", "HOUR", "DAY", "WEEK"]
+        default_value: "MINUTE"
+    - twitter:
+        short: t
+        long: twitter
+        help: Posts screenshot to twitter

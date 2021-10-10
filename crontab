@@ -1,0 +1,16 @@
+#################
+### SAVE DATA AND TWEET
+#################
+# HOURLY at :30 (save 30 min data)
+0,30 * * * * docker run --env-file=$HOME/.env solend-apy-bot:1.0 -st >> $HOME/logs/solend-apy-bot.log 2>&1
+# HOURLY at :00 (tweet table)
+0 * * * * docker run --env-file=$HOME/.env solend-apy-bot:1.0 -d HOUR >> $HOME/logs/solend-apy-bot.log 2>&1
+# DAILY at 00:00 (tweet graphs)
+0 0 * * * docker run --env-file=$HOME/.env solend-apy-bot:1.0 -ctd DAY >> $HOME/logs/solend-apy-bot.log 2>&1
+# WEEKLY on Monday at 00:00 (save weekly data)
+0 0 * * 1 docker run --env-file=$HOME/.env solend-apy-bot:1.0 -d WEEK >> $HOME/logs/solend-apy-bot.log 2>&1
+
+#################
+# REMOVE CRONTAB LOGS
+#################
+59 23 * * 7 rm -f $HOME/logs/solend-apy-bot.log

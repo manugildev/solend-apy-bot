@@ -1,0 +1,7 @@
+.env
+.git/
+node_modules
+readme/
+target/
+!target/debug/solend-apy-bot
+web/dist
