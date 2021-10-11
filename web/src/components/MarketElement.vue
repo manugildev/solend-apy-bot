@@ -34,15 +34,10 @@ export default {
 
 <style>
 
-.main-row {
-  height: 100%;
-}
-
 .market-token {
   display: flex;
   align-items: center;
   justify-content: left;
-  margin: 6px 0px 6px 0px;
 }
 
 .market-borrow-left {
