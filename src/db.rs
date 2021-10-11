@@ -1,4 +1,5 @@
 use chrono::offset::Utc;
+use chrono::DateTime;
 use mongodb::{
     bson::{to_document, doc},
     Client,
@@ -6,11 +7,12 @@ use mongodb::{
     options::{ClientOptions, FindOptions},
 };
 use log::info;
+use serde::{Serialize, Deserialize};
+use std::str::FromStr;
+use std::fmt;
 
 use crate::config::Config;
 use crate::apy::APY;
-use crate::apy::APYDataPoint;
-use crate::apy::DataType;
 
 pub struct Database {
     client: Client,
@@ -76,5 +78,41 @@ impl Database {
         let body = res.text().await.unwrap();
         let result: Vec<APY> = serde_json::from_str(&body.as_str()).unwrap();
         self.insert_apys(&result, data_type).await;
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct APYDataPoint {
+    pub date: DateTime<Utc>,
+    pub data_type: DataType,
+    pub apys: Vec<APY>,
+}
+
+
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, Hash, Eq, PartialEq)]
+pub enum DataType {
+    MINUTE,
+    HOUR,
+    DAY,
+    WEEK,
+}
+
+impl FromStr for DataType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "MINUTE"| "minute" => Ok(DataType::MINUTE),
+            "HOUR"| "hour" => Ok(DataType::HOUR),
+            "DAY" | "day" => Ok(DataType::DAY),
+            "WEEK" | "week" => Ok(DataType::WEEK),
+            _ => Err(format!("'{}' is not a valid value for DataType", s)),
+        }
+    }
+}
+
+impl fmt::Display for DataType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
     }
 }

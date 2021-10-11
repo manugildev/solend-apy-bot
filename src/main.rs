@@ -30,11 +30,11 @@ use std::{
 };
 
 use apy::APY;
-use apy::DataType;
+use db::DataType;
 use db::Database;
 use bot::TwitterBot;
 use bot::ScreenshotBot;
-use utils::AssetQuote;
+use utils::AssetSymbol;
 use utils::ChartData;
 use utils::config;
 
@@ -44,16 +44,17 @@ const _DEVNET_CONFIG_JSON: &str = include_str!("assets/devnet.json");
 
 lazy_static! {
 #[rustfmt::skip]
-static ref PRODUCTION_ASSETS: Vec<AssetQuote> = [
-        (AssetQuote::SOL),
-        (AssetQuote::USDC),
-        (AssetQuote::ETH),
-        (AssetQuote::BTC),
-        (AssetQuote::SRM),
-        (AssetQuote::USDT),
-        (AssetQuote::FTT),
-        (AssetQuote::RAY),
-        (AssetQuote::SBR),
+static ref PRODUCTION_ASSETS: Vec<AssetSymbol> = [
+        (AssetSymbol::SOL),
+        (AssetSymbol::USDC),
+        (AssetSymbol::ETH),
+        (AssetSymbol::BTC),
+        (AssetSymbol::SRM),
+        (AssetSymbol::USDT),
+        (AssetSymbol::FTT),
+        (AssetSymbol::RAY),
+        (AssetSymbol::SBR),
+        (AssetSymbol::MER),
     ].iter().cloned().collect();
 }
 
@@ -63,18 +64,15 @@ static ref PRODUCTION_ASSETS: Vec<AssetQuote> = [
 #[get("/apy")]
 async fn apy_route() -> impl Responder {
     let client = RpcClient::new_with_timeout(RPC_URL.to_string(), Duration::from_secs(120));
-    let mut result = Vec::<APY>::new();
-    for &asset_quote in PRODUCTION_ASSETS.iter() {
-        result.push(APY::from_asset(&client, asset_quote));
-    }
+    let result = APY::from_assets(&client, &PRODUCTION_ASSETS);
     HttpResponse::Ok().json(&result)
 }
 
-#[get("/apy/{asset_quote}")]
+#[get("/apy/{asset_symbol}")]
 async fn apy_asset_route(param: web::Path<String>) -> impl Responder {
     let client = RpcClient::new_with_timeout(RPC_URL.to_string(), Duration::from_secs(120));
-    let asset_quote = AssetQuote::from_str(&param.to_uppercase()).unwrap();
-    let apy = APY::from_asset(&client, asset_quote);
+    let asset_symbol = AssetSymbol::from_str(&param.to_uppercase()).unwrap();
+    let apy = APY::from_asset(&client, asset_symbol);
     HttpResponse::Ok().json(&apy)
 }
 
@@ -92,17 +90,18 @@ async fn chart_data() -> impl Responder {
     // Process data for Vue charting
     let mut chart_data_borrow_vec : Vec<ChartData> = Vec::new();
     let mut chart_data_supply_vec : Vec<ChartData> = Vec::new();
-    for (usize, &asset_quote) in PRODUCTION_ASSETS.iter().enumerate() {
+    for (index, &asset_symbol) in PRODUCTION_ASSETS.iter().enumerate() {
         let mut data_points_borrow = Vec::new();
         let mut data_points_supply = Vec::new();
         for r in &result {
-            let borrow_value = f64::trunc(r.apys[usize].borrow * 10000.0) / 100.0;
-            let supply_value = f64::trunc(r.apys[usize].supply * 10000.0) / 100.0;
+            if index >= r.apys.len() { break; }
+            let borrow_value = f64::trunc(r.apys[index].borrow * 10000.0) / 100.0;
+            let supply_value = f64::trunc(r.apys[index].supply * 10000.0) / 100.0;
             data_points_borrow.push((r.date.to_string(), borrow_value));
             data_points_supply.push((r.date.to_string(), supply_value));
         }
-        let chart_data_borrow = ChartData { name: asset_quote, data: data_points_borrow, };
-        let chart_data_supply= ChartData { name: asset_quote, data: data_points_supply, };
+        let chart_data_borrow = ChartData { name: asset_symbol, data: data_points_borrow, };
+        let chart_data_supply= ChartData { name: asset_symbol, data: data_points_supply, };
         chart_data_supply_vec.push(chart_data_supply);
         chart_data_borrow_vec.push(chart_data_borrow);
     }

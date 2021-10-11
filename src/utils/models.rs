@@ -2,6 +2,8 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::str::FromStr;
 
+use crate::PRODUCTION_CONFIG_JSON;
+
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all(serialize = "snake_case", deserialize = "camelCase"))]
 pub struct ProgramConfig {
@@ -14,7 +16,7 @@ pub struct ProgramConfig {
 #[serde(rename_all(serialize = "snake_case", deserialize = "camelCase"))]
 pub struct Asset {
     pub name: String,
-    pub symbol: AssetQuote,
+    pub symbol: AssetSymbol,
     pub decimals: u8,
     pub mint_address: String,
 }
@@ -32,7 +34,7 @@ pub struct Market {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all(serialize = "snake_case", deserialize = "camelCase"))]
 pub struct Reserve {
-    pub asset: AssetQuote,
+    pub asset: AssetSymbol,
     pub address: String,
     pub collateral_mint_address: String,
     pub collateral_supply_address: String,
@@ -54,7 +56,7 @@ pub struct Oracle {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all(serialize = "snake_case", deserialize = "camelCase"))]
 pub struct OracleAsset {
-    pub asset: AssetQuote,
+    pub asset: AssetSymbol,
     pub oracle_address: String,
     pub price_address: String,
     pub switchboard_feed_address: String,
@@ -62,7 +64,8 @@ pub struct OracleAsset {
 
 #[allow(non_camel_case_types)]
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, Hash, Eq, PartialEq)]
-pub enum AssetQuote {
+pub enum AssetSymbol {
+    // TODO: Auto generate this form PRODUCTION_CONFIG_JSON
     SOL,
     USDC,
     ETH,
@@ -79,31 +82,41 @@ pub enum AssetQuote {
     UST,
 }
 
-impl FromStr for AssetQuote {
+#[allow(dead_code)]
+impl AssetSymbol {
+    pub fn name(&self) -> String {
+        let assets = serde_json::from_str::<ProgramConfig>(PRODUCTION_CONFIG_JSON).unwrap().assets;
+        return match self {
+            _ => assets.iter().find(|a| a.symbol == *self).unwrap().name.clone(),
+        };
+    }
+}
+
+impl FromStr for AssetSymbol {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "SOL" => Ok(AssetQuote::SOL),
-            "USDC" => Ok(AssetQuote::USDC),
-            "ETH" => Ok(AssetQuote::ETH),
-            "BTC" => Ok(AssetQuote::BTC),
-            "SRM" => Ok(AssetQuote::SRM),
-            "USDT" => Ok(AssetQuote::USDT),
-            "FTT" => Ok(AssetQuote::FTT),
-            "RAY" => Ok(AssetQuote::RAY),
-            "MER" => Ok(AssetQuote::MER),
-            "SBR" => Ok(AssetQuote::SBR),
-            "MNGO" => Ok(AssetQuote::MNGO),
-            "MSOL" => Ok(AssetQuote::mSOL),
-            "PAI" => Ok(AssetQuote::PAI),
-            "UST" => Ok(AssetQuote::UST),
-            _ => Err(format!("'{}' is not a valid value for AssetQuote", s)),
+            "SOL" => Ok(AssetSymbol::SOL),
+            "USDC" => Ok(AssetSymbol::USDC),
+            "ETH" => Ok(AssetSymbol::ETH),
+            "BTC" => Ok(AssetSymbol::BTC),
+            "SRM" => Ok(AssetSymbol::SRM),
+            "USDT" => Ok(AssetSymbol::USDT),
+            "FTT" => Ok(AssetSymbol::FTT),
+            "RAY" => Ok(AssetSymbol::RAY),
+            "MER" => Ok(AssetSymbol::MER),
+            "SBR" => Ok(AssetSymbol::SBR),
+            "MNGO" => Ok(AssetSymbol::MNGO),
+            "MSOL" => Ok(AssetSymbol::mSOL),
+            "PAI" => Ok(AssetSymbol::PAI),
+            "UST" => Ok(AssetSymbol::UST),
+            _ => Err(format!("'{}' is not a valid value for AssetSymbol", s)),
         }
     }
 }
 
-impl fmt::Display for AssetQuote {
+impl fmt::Display for AssetSymbol {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{:?}", self)
     }
@@ -111,7 +124,6 @@ impl fmt::Display for AssetQuote {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ChartData {
-    pub name: AssetQuote,
+    pub name: AssetSymbol,
     pub data: Vec<(String, f64)>,
 }
-

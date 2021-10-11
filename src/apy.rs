@@ -1,37 +1,61 @@
 use std::str::FromStr;
-use std::fmt;
-use chrono::offset::Utc;
-use chrono::DateTime;
 use log::info;
 use serde::{Serialize, Deserialize};
 use solana_client::rpc_client::RpcClient;
 use solana_sdk::{program_pack::Pack, pubkey::Pubkey};
 use spl_token_lending::state::Reserve;
 
-use crate::{AssetQuote, PRODUCTION_CONFIG_JSON, utils::ProgramConfig};
+use crate::{AssetSymbol, PRODUCTION_CONFIG_JSON, utils::ProgramConfig};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct APY {
-    pub asset: AssetQuote,
+    pub asset: AssetSymbol,
     pub price: f64,
     pub supply: f64,
     pub borrow: f64,
 }
+
 impl APY {
-    pub fn from_asset(rpc_client: &RpcClient, asset_quote: AssetQuote) -> Self {
-        info!("Calculate {} APY", asset_quote);
+    pub fn from_assets(rpc_client: &RpcClient, assets: &Vec<AssetSymbol>) -> Vec<Self> {
         let program_config : ProgramConfig = serde_json::from_str(PRODUCTION_CONFIG_JSON).unwrap();
-        let reserve_json= program_config.markets[0].reserves.iter().find(|e| e.asset == asset_quote).unwrap();
+        // Get all production PubKeys
+        let mut account_pks = Vec::<Pubkey>::new();
+        for &asset_symbol in assets {
+            let reserve_json= program_config.markets[0].reserves.iter().find(|e| e.asset == asset_symbol).unwrap();
+            let reserve_pk = Pubkey::from_str(&reserve_json.address.to_string()).unwrap();
+            account_pks.push(reserve_pk);
+        }
+
+        let accounts = rpc_client.get_multiple_accounts(&account_pks).unwrap();
+        let mut result = Vec::<APY>::new();
+        for (index, account) in accounts.iter().enumerate() {
+            let data = account.as_ref().unwrap().data.clone();
+            let reserve = Reserve::unpack_from_slice(&data).unwrap();
+            let asset_symbol = assets[index];
+
+            result.push(Self::from_reserve(asset_symbol, &reserve));
+        }
+        return result;
+    }
+
+    pub fn from_asset(rpc_client: &RpcClient, asset_symbol: AssetSymbol) -> Self {
+        let program_config : ProgramConfig = serde_json::from_str(PRODUCTION_CONFIG_JSON).unwrap();
+        let reserve_json= program_config.markets[0].reserves.iter().find(|e| e.asset == asset_symbol).unwrap();
         let reserve_pk = Pubkey::from_str(&reserve_json.address.to_string()).unwrap();
         let account_data = rpc_client.get_account_data(&reserve_pk).unwrap();
         let reserve = Reserve::unpack_from_slice(&account_data).unwrap();
         
+        return Self::from_reserve(asset_symbol, &reserve);
+    }
+
+    fn from_reserve(asset_symbol: AssetSymbol, reserve: &Reserve) -> Self {
+        info!("Calculate {} APY", asset_symbol);
         let market_price = (reserve.liquidity.market_price.to_scaled_val().unwrap() as f64) / (1_000_000_000_000_000_000f64);
         let supply_apy = Self::calculate_supply(&reserve);
         let borrow_apy = Self::calculate_borrow(&reserve);
-
+        
         return Self {
-            asset: asset_quote,
+            asset: asset_symbol,
             price: market_price,
             supply: supply_apy,
             borrow: borrow_apy,
@@ -69,41 +93,5 @@ impl APY {
         let available_ammount = reserve.liquidity.available_amount;
         let current_utilization = borrowed_ammount as f64 / (available_ammount + borrowed_ammount) as f64;
         return current_utilization;
-    }
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct APYDataPoint {
-    pub date: DateTime<Utc>,
-    pub data_type: DataType,
-    pub apys: Vec<APY>,
-}
-
-
-#[derive(Serialize, Deserialize, Clone, Copy, Debug, Hash, Eq, PartialEq)]
-pub enum DataType {
-    MINUTE,
-    HOUR,
-    DAY,
-    WEEK,
-}
-
-impl FromStr for DataType {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "MINUTE"| "minute" => Ok(DataType::MINUTE),
-            "HOUR"| "hour" => Ok(DataType::HOUR),
-            "DAY" | "day" => Ok(DataType::DAY),
-            "WEEK" | "week" => Ok(DataType::WEEK),
-            _ => Err(format!("'{}' is not a valid value for DataType", s)),
-        }
-    }
-}
-
-impl fmt::Display for DataType {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}", self)
     }
 }
