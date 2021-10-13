@@ -132,10 +132,19 @@ fn main() {
     });
     let srv = rx.recv().unwrap();
 
-    // Keep server alive for debuggin purposes
     if matches.is_present("server") {
-        // TODO: Handle CTRL+C
-        loop { }
+        let (ctrlc_tx, ctrlc_rx) = mpsc::channel();
+
+        ctrlc::set_handler(move || ctrlc_tx.send(())
+            .expect("Could not send signal on channel"))
+            .expect("Error setting CTRL-C handler");
+
+        // Keep server alive for debugging purposes
+        ctrlc_rx.recv().expect("Could not receive singal from channel.");
+        // Close WebServer
+        rt::System::new("").block_on(srv.stop(true));
+        info!("Server closed");
+        return;
     }
 
     let rt = tokio::runtime::Runtime::new().unwrap();
