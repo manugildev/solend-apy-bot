@@ -10,7 +10,8 @@
         <line-chart height="100%"
                     :data="chart_data"
                     :library="supply_library"
-                    :key="component_key"/>
+                    :key="component_key"
+                    :colors="chart_line_colors"/>
                     <!-- :colors="chart_line_colors" -->
     </b-aspect>
 </template>
@@ -46,7 +47,7 @@ export default {
         loader: "dots",
         opacity: 0.9,
         component_key: 0,
-        chart_line_colors: [ "#C844E4", "#2674CA", "#F2F4F7", "#F8A137", "#64D0DF", "#27A07B", "#DE725F", "#5D20A6", "#6764FB", ],
+        chart_line_colors: [ "#469990", "#2775CA", "#F2F4F7", "#F58231", "#E6194B", "#3CB44B", "#DCBEFF", "#F032E6", "#FFE119", "#E74C3C", "#FABED4", "#42D4F4"],
         supply_library: {
             elements : {
                 line: {
