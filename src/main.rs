@@ -47,10 +47,10 @@ lazy_static! {
 static ref PRODUCTION_ASSETS: Vec<AssetSymbol> = [
         (AssetSymbol::SOL),
         (AssetSymbol::USDC),
+        (AssetSymbol::USDT),
         (AssetSymbol::ETH),
         (AssetSymbol::BTC),
         (AssetSymbol::SRM),
-        (AssetSymbol::USDT),
         (AssetSymbol::FTT),
         (AssetSymbol::RAY),
         (AssetSymbol::SBR),
@@ -90,10 +90,11 @@ async fn chart_data() -> impl Responder {
     // Process data for Vue charting
     let mut chart_data_borrow_vec : Vec<ChartData> = Vec::new();
     let mut chart_data_supply_vec : Vec<ChartData> = Vec::new();
-    for (index, &asset_symbol) in PRODUCTION_ASSETS.iter().enumerate() {
+    for &asset_symbol in PRODUCTION_ASSETS.iter() {
         let mut data_points_borrow = Vec::new();
         let mut data_points_supply = Vec::new();
         for r in &result {
+            let index : usize = result[0].apys.iter().position(|e| { e.asset == asset_symbol } ).unwrap();
             if index >= r.apys.len() { break; }
             let borrow_value = f64::trunc(r.apys[index].borrow * 10000.0) / 100.0;
             let supply_value = f64::trunc(r.apys[index].supply * 10000.0) / 100.0;

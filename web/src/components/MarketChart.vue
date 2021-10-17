@@ -47,7 +47,7 @@ export default {
         loader: "dots",
         opacity: 0.9,
         component_key: 0,
-        chart_line_colors: [ "#469990", "#2775CA", "#F2F4F7", "#F58231", "#E6194B", "#3CB44B", "#DCBEFF", "#F032E6", "#FFE119", "#E74C3C", "#FABED4", "#42D4F4"],
+        chart_line_colors: [ "#469990", "#2775CA", "#3CB44B", "#F2F4F7", "#F58231", "#E6194B", "#C6ABE6", "#F032E6", "#FFE119", "#E95E50", "#FABED4", "#42D4F4"],
         supply_library: {
             elements : {
                 line: {
