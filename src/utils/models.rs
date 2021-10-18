@@ -68,10 +68,10 @@ pub enum AssetSymbol {
     // TODO: Auto generate this form PRODUCTION_CONFIG_JSON
     SOL,
     USDC,
+    USDT,
     ETH,
     BTC,
     SRM,
-    USDT,
     FTT,
     RAY,
     MER,
@@ -99,10 +99,10 @@ impl FromStr for AssetSymbol {
         match s {
             "SOL" => Ok(AssetSymbol::SOL),
             "USDC" => Ok(AssetSymbol::USDC),
+            "USDT" => Ok(AssetSymbol::USDT),
             "ETH" => Ok(AssetSymbol::ETH),
             "BTC" => Ok(AssetSymbol::BTC),
             "SRM" => Ok(AssetSymbol::SRM),
-            "USDT" => Ok(AssetSymbol::USDT),
             "FTT" => Ok(AssetSymbol::FTT),
             "RAY" => Ok(AssetSymbol::RAY),
             "MER" => Ok(AssetSymbol::MER),

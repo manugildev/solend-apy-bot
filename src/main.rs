@@ -16,6 +16,7 @@ use actix_web::{
     web,
 };
 use clap::{load_yaml, App as ClapApp};
+use chrono::Duration as chrono_Duration;
 use dotenv::dotenv;
 use lazy_static::lazy_static;
 use log::{info, error};
@@ -83,7 +84,7 @@ async fn chart_data() -> impl Responder {
     let mut result = Vec::new();
     let async_block  = async { 
         let database = Database::from_config(utils::Config::from_env().unwrap()).await;
-        result = database.get_datapoints(7, DataType::DAY).await;
+        result = database.get_daily_datapoints_as_avg(chrono_Duration::days(7)).await;
     };
     rt.block_on(async_block);
 
@@ -93,13 +94,14 @@ async fn chart_data() -> impl Responder {
     for &asset_symbol in PRODUCTION_ASSETS.iter() {
         let mut data_points_borrow = Vec::new();
         let mut data_points_supply = Vec::new();
-        for r in &result {
-            let index : usize = result[0].apys.iter().position(|e| { e.asset == asset_symbol } ).unwrap();
-            if index >= r.apys.len() { break; }
-            let borrow_value = f64::trunc(r.apys[index].borrow * 10000.0) / 100.0;
-            let supply_value = f64::trunc(r.apys[index].supply * 10000.0) / 100.0;
-            data_points_borrow.push((r.date.to_string(), borrow_value));
-            data_points_supply.push((r.date.to_string(), supply_value));
+        let index : usize = result.iter().position(|e| { e.name == asset_symbol } ).unwrap();
+        for s in &result[index].supply {
+            let supply_value = f64::trunc(s[1].parse::<f64>().unwrap() * 10000.0) / 100.0;
+            data_points_supply.push((s[0].to_string(), supply_value));
+        }
+        for s in &result[index].borrow {
+            let borrow_value = f64::trunc(s[1].parse::<f64>().unwrap() * 10000.0) / 100.0;
+            data_points_borrow.push((s[0].to_string(), borrow_value));
         }
         let chart_data_borrow = ChartData { name: asset_symbol, data: data_points_borrow, };
         let chart_data_supply= ChartData { name: asset_symbol, data: data_points_supply, };
