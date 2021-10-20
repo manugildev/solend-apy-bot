@@ -27,7 +27,7 @@ export default {
 }
 
 .header {
-  height: 14%;
+  height: 12%;
   color: #64676d;
   font-size: 16px;
 }

@@ -1,6 +1,6 @@
 <template>
     <div class="main-container">
-      <b-aspect class="vld-parent" :aspect="'16:9'">
+      <b-aspect class="vld-parent" :aspect="'18:9'">
         <loading :active.sync="is_loading"
                  :is-full-page="full_page"
                  :loader="loader"
@@ -111,7 +111,7 @@ export default {
 }
 
 .main-row{
-  height: 86%; /* Market header is currently 14% */
+  height: 88%; /* Market header is currently 14% */
 }
 
 /* Button */
