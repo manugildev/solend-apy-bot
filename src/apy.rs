@@ -13,6 +13,7 @@ const TOTAL_WEIGHT: u8 = 11;
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct APY {
     pub asset: AssetSymbol,
+    pub name: String,
     pub price: f64,
     pub supply: f64,
     pub borrow: f64,
@@ -62,6 +63,7 @@ impl APY {
         
         return Self {
             asset: asset_symbol,
+            name: asset_symbol.name(),
             price: market_price,
             supply: supply_apy,
             borrow: borrow_apy,

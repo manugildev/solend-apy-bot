@@ -3,7 +3,7 @@
         <b-col class="market-token" cols="6">
             <img class="market-icon" :src="require(`@/assets/logo_${apy.asset.toLowerCase()}.png`)"/>
             <div class="market-token-col">
-              <div class="market-token-name">{{ apy.asset }}</div>
+              <div class="market-token-name">{{ apy.name }}</div>
               <div class="market-token-price">{{ format_currency_value(apy.price) }}</div>
             </div>
         </b-col>
