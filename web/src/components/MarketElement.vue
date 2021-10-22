@@ -130,7 +130,7 @@ export default {
 
 .market-boost {
     background: linear-gradient(275.27deg,#E05E34 1.51%,#C45D3C 195.89%);
-    color: #fff;
+    color: #0F1018;
     border-radius: 4px;
     display: inline-block;
     padding: 0 4px;

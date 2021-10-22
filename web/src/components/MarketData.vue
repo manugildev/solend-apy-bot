@@ -1,6 +1,6 @@
 <template>
     <div class="main-container">
-      <b-aspect class="vld-parent" :aspect="'18:9'">
+      <b-aspect class="vld-parent" :aspect="'16:9'">
         <loading :active.sync="is_loading"
                  :is-full-page="full_page"
                  :loader="loader"
