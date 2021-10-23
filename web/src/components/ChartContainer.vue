@@ -10,8 +10,7 @@
             <b-row style="height: 10px;"></b-row>
 
             <b-row class="borrow_chart">
-                <MarketChart :class_name="'borrow_chart'"
-                             title="Weekly Borrow APY"
+                <MarketChart title="Weekly Borrow APY"
                              :chart_data="chart_data[1]"
                              :is_loading="is_loading"/>
             </b-row>
