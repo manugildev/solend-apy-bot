@@ -18,20 +18,20 @@ export default {
 
 <style>
 body {
+  align-items: center;
   background-color: #0F1018;
   background-image: url(../../assets/market_hero.dark.svg);
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 100vh;
-  align-items: center;
   justify-items: center;
 }
 
 #app {
+  color: #2C3E50;
   font-family: "IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
-  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+  -webkit-font-smoothing: antialiased;
   min-width: 850px;
 }
 

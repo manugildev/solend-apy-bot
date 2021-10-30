@@ -22,21 +22,21 @@ export default {
 
 <style>
 .header-container {
-  display: flex;
   align-items: flex-end;
+  display: flex;
 }
 
 .header {
-  height: 12%;
-  color: #64676d;
+  color: #64676D;
   font-size: 16px;
+  height: 12%;
 }
 
 .header-col {
-  border-bottom: 1px solid #23242e;
-  height: 100%;
-  display: grid;
   align-items: center;
+  border-bottom: 1px solid #23242E;
+  display: grid;
+  height: 100%;
 }
 
 .header-token {
@@ -52,7 +52,6 @@ export default {
 }
 
 .header-borrow-left {
-  border-right: 1px solid #23242e;
-
+  border-right: 1px solid #23242E;
 }
 </style>

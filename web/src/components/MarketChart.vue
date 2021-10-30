@@ -63,7 +63,7 @@ export default {
                 fontStyle: "normal",
             },
             layout: { padding: 15 },
-            legend: { labels: { padding: 10, fontColor: "#fff", boxWidth: 14 } },
+            legend: { labels: { padding: 10, fontColor: "#FFF", boxWidth: 14 } },
             scales: {
                 yAxes: [
                     {
@@ -110,8 +110,8 @@ export default {
 
 <style>
 .chart {
-  background-color: #0f1018;
-  border: 1px solid #23242e;
+  background-color: #0F1018;
+  border: 1px solid #23242E;
   padding-right: 10px;
 }
 
