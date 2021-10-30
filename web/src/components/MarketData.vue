@@ -97,17 +97,17 @@ export default {
 
 <style scoped>
 #markets-container {
-  background-color: #0f1018;
-  height: 100%;
+  background-color: #0F1018;
+  border: 1px solid #23242E;
   font-size: 18px;
+  height: 100%;
   padding: 0px 20px 0px 20px;
-  border: 1px solid #23242e;
 }
 
 .market-row {
-  height: 20%; /* 100% / 5 */
-  display: flex;
   align-items: center;
+  display: flex;
+  height: 20%; /* 100% / 5 */
 }
 
 .main-row{
@@ -116,44 +116,44 @@ export default {
 
 /* Button */
 .image-button {
-  font-size: 13px;
-  width: 230px;
-  background-color: #f5f5f5;
-  color: #0f1018;
-  border: 0px solid #64676d;
-  padding: 4px 5px;
-  justify-content: center;
   align-items: center;
+  background-color: #F5F5F5;
+  border: 0px solid #64676D;
+  color: #0F1018;
+  font-size: 13px;
+  justify-content: center;
   margin: 5px 1px 1px 1px;
+  padding: 4px 5px;
+  width: 230px;
 }
 
 .image-button:hover {
+  background-color: #F5F5F5;
   border: 0px;
-  background-color: #f5f5f5;
   color: #353642;
 }
 
 .image-button:active {
+  background-color: #F5F5F5;
   border: 0px;
-  color: #23242e;
-  background-color: #f5f5f5;
+  color: #23242E;
 }
 
 .image-button:active:focus {
-  box-shadow: 0 0 0 0.1rem #f5f5f5;
+  box-shadow: 0 0 0 0.1rem #F5F5F5;
 }
 
 .image-button:focus {
+  background-color: #F5F5F5;
   border: 0px;
-  color: #23242e;
-  background-color: #f5f5f5;
   box-shadow: none;
+  color: #23242E;
 }
 
 .b-icon {
-  vertical-align: text-top;
   margin-right: 6px;
   padding: 1px;
+  vertical-align: text-top;
 }
 
 </style>

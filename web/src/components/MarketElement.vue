@@ -66,8 +66,8 @@ export default {
 <style>
 
 .market-token {
-  display: flex;
   align-items: center;
+  display: flex;
   justify-content: left;
 }
 
@@ -76,13 +76,13 @@ export default {
 }
 
 .market-icon {
-  height: 50px;
-  width: 50px;
-  min-width: 50px;
-  min-height: 50px;
   border-radius: 100%;
-  overflow: hidden;
+  height: 50px;
   margin: 0px 10px;
+  min-height: 50px;
+  min-width: 50px;
+  overflow: hidden;
+  width: 50px;
 }
 
 .market-token-col {
@@ -92,42 +92,42 @@ export default {
 }
 
 .market-token-name {
+  color: #FEFEFE;
   display: inline-block;
   font-size: 20px;
-  color: #FEFEFE;
 }
 
 .market-token-price {
+  color: #64676D;
   font-size: 16px;
-  color: #64676d;
 }
 
 .market-apy-container {
-  display: grid;
   align-items: center;
+  color: #FEFEFE;
+  display: grid;
   justify-content: right;
   text-align: right!important;
-  color: #FEFEFE;
 }
 
 .market-apy {
- font-size: 19px;
- min-width: 65px;
- display: inline-block;
+  display: inline-block;
+  font-size: 19px;
+  min-width: 65px;
 }
 
 .market-reward {
+  color: #64676D;
   font-size: 14px;
-  color: #64676d
 }
 
 .market-slnd-token {
-  height: 12px;
-  width: 12px;
   border-radius: 100%;
-  overflow: hidden;
+  height: 12px;
   margin-bottom: 1px;
   outline: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  width: 12px;
 }
 
 .market-boost {
