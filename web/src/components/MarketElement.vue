@@ -6,11 +6,11 @@
               <div class="market-token-name">{{ apy.name }}</div>
               <div class="market-token-price">{{ format_currency_value(apy.price) }}</div>
             </div>
+            <div class="market-boost" v-if="format_reward_value(apy.borrow_rewards) != 0">{{apy.weight}}x</div>
         </b-col>
 
         <b-col v-if="format_reward_value(apy.supply_rewards) != 0" class="market-apy-container" cols="3">
           <div>
-            <div class="market-boost">{{apy.weight}}x</div>
             <span class="market-apy"> {{ format_percent_value(apy.supply) }} </span> <br/>
             <span class="market-reward">
               {{ format_reward_value(apy.supply_rewards) }}
@@ -22,7 +22,6 @@
 
         <b-col v-if="format_reward_value(apy.borrow_rewards) != 0" class="market-apy-container" cols="3" v-bind:class="{'market-borrow-left' : left}">
           <div>
-            <div class="market-boost">{{apy.weight}}x</div>
             <span class="market-apy"> {{ format_percent_value(apy.borrow) }} </span> <br/>
             <span class="market-reward">
               {{ format_reward_value(apy.borrow_rewards) }}
@@ -79,6 +78,8 @@ export default {
 .market-icon {
   height: 50px;
   width: 50px;
+  min-width: 50px;
+  min-height: 50px;
   border-radius: 100%;
   overflow: hidden;
   margin: 0px 10px;
@@ -87,15 +88,16 @@ export default {
 .market-token-col {
   padding-left: 10px;
   text-align: left!important;
+  width: 100%;
 }
 
 .market-token-name {
   display: inline-block;
+  font-size: 20px;
   color: #FEFEFE;
 }
 
 .market-token-price {
-  color: #FEFEFE;
   font-size: 16px;
   color: #64676d;
 }
@@ -109,13 +111,12 @@ export default {
 }
 
 .market-apy {
- font-size: 17px;
+ font-size: 19px;
  min-width: 65px;
  display: inline-block;
 }
 
 .market-reward {
-  color: #FEFEFE;
   font-size: 14px;
   color: #64676d
 }
@@ -126,16 +127,18 @@ export default {
   border-radius: 100%;
   overflow: hidden;
   margin-bottom: 1px;
+  outline: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .market-boost {
-    background: linear-gradient(275.27deg,#E05E34 1.51%,#C45D3C 195.89%);
-    color: #0F1018;
-    border-radius: 4px;
-    display: inline-block;
-    padding: 0 4px;
-    margin-right: 5px;
-    font-size: 16px;
-    font-weight: bold;
+  background: linear-gradient(275.27deg,#FF5C28 1.51%,#FFE600 195.89%);
+  border-radius: 4px;
+  color: #FFFFFF;
+  display: inline-block;
+  font-size: 19px;
+  font-weight: bold;
+  margin-right: -15px;
+  padding: 0px 6px;
+  text-shadow: 0px 0px 6px #4D4D4D, 1px 1px 0px #3B3B3B;
 }
 </style>
