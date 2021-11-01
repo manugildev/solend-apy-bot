@@ -21,6 +21,33 @@
             </b-col>
           </b-row>
         </b-container>
+        <b-container id="stats-container">
+          <b-row class="stats-row">
+
+            <b-col cols="4" class="separator-left">
+              <div class="stats-col">
+                <div class="stats-name">Total assets supplied</div>
+                <div class="stats-value">{{ format_millions_value(info.total_supplied) }}</div>
+              </div>
+            </b-col>
+
+            <b-col cols="4" class="separator-left">
+              <div class="stats-col">
+                <div class="stats-name">Total assets borrowed</div>
+                <div class="stats-value">{{ format_millions_value(info.total_borrowed) }}</div>
+              </div>
+            </b-col>
+
+            <b-col cols="4" class="stats-token-container">
+              <img class="stats-logo" :src="require(`@/assets/logo_slnd.png`)"/>
+              <div class="stats-col">
+                <div class="stats-name">SLND price (<span class="stats-ido">IDO</span>)</div>
+                <div class="stats-value">{{ format_currency_value(info.slnd_price) }}</div>
+              </div>
+            </b-col>
+
+          </b-row>
+        </b-container>
       </b-aspect>
     <!--
     <b-container class="button-container">
@@ -49,6 +76,8 @@ export default {
   components: { MarketHeader, MarketElement, Loading, },
   data() {
     return {
+      info: {},
+      info_data_cache: "{ 'total_supplied' : 0.0, 'total_borrowed': '0.0', 'slnd_price': '0.0'}",
       apys: [],
       table_data_cache: "",
       backgroundColor: "#0E1118",
@@ -61,9 +90,11 @@ export default {
   },
   mounted() {
     if (localStorage.table_data_cache) { this.apys = JSON.parse(localStorage.table_data_cache); }
+    if (localStorage.info_data_cache) { this.info = JSON.parse(localStorage.info_data_cache); }
   },
   watch: {
     table_data_cache(new_data) { localStorage.table_data_cache = new_data; },
+    info_data_cache(new_data) { localStorage.info_data_cache = new_data; },
   },
   async created() {
     this.is_loading = !Vue.config.devtools;
@@ -76,10 +107,25 @@ export default {
     this.table_data_cache = JSON.stringify(table_data);
     this.apys = table_data;
 
+    // GET /info request using fetch with async/await
+    response = await fetch("/info");
+    let info_data = await response.json();
+    this.info_data_cache = JSON.stringify(info_data);
+    this.info = info_data;
+
     this.is_loading = false;
   },
 
   methods: {
+      format_currency_value: function(value){
+          if(!value) { return "$0.00"}
+          return "$" + (parseFloat(value).toFixed(2))
+      },
+      format_millions_value: function(value){
+          if(!value) { return "$0M"}
+          return "$" + ((parseFloat(value) / 1000000).toFixed(0)) + "M"
+      },
+
     /*         take_screenshot: function () {
           let markets_container = document.getElementById('markets-container');
           html2canvas(markets_container).then(function(canvas) {
@@ -96,11 +142,71 @@ export default {
 </script>
 
 <style scoped>
+#stats-container {
+  align-items: center;
+  background-color: #0F1018;
+  border: 1px solid #23242E;
+  border-top: 0px;
+  display: grid;
+  font-size: 18px;
+  height: 13%;
+  padding: 0px 20px 0px 20px;
+}
+
+.stats-col {
+  padding-left: 10px;
+  text-align: center!important;
+  justify-content: center;
+
+}
+
+.stats-name {
+  color: #64676D;
+  display: inline-block;
+  font-size: 16px;
+}
+
+.stats-token-container {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  text-align: center!important;
+}
+
+.stats-ido {
+  background: -webkit-linear-gradient(#ff5c28,#ff8f28);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+  font-size: 16px;
+}
+
+.stats-logo {
+  border-radius: 100%;
+  width: 30px;
+  height: 30px;
+  margin-left: -20px;
+  margin-right: 2px;
+  max-height: 40px;
+  max-width: 40px;
+  outline: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stats-value{
+  color: #FEFEFE;
+  font-size: 22px;
+}
+
+.separator-left {
+  border-right: 1px solid #23242E;
+}
+
 #markets-container {
   background-color: #0F1018;
   border: 1px solid #23242E;
   font-size: 18px;
-  height: 100%;
+  height: 87%;
   padding: 0px 20px 0px 20px;
 }
 
@@ -111,7 +217,7 @@ export default {
 }
 
 .main-row{
-  height: 88%; /* Market header is currently 14% */
+  height: 90%; /* Market header is currently 10% */
 }
 
 /* Button */

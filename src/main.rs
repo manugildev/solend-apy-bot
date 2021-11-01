@@ -2,6 +2,7 @@ mod apy;
 mod bot;
 mod db;
 mod utils;
+mod stats;
 
 use actix_files::Files;
 use actix_web::{
@@ -38,6 +39,7 @@ use bot::ScreenshotBot;
 use utils::AssetSymbol;
 use utils::ChartData;
 use utils::config;
+use stats::Stats;
 
 const RPC_URL: &str = "https://api.mainnet-beta.solana.com";
 const PRODUCTION_CONFIG_JSON: &str = include_str!("assets/production.json");
@@ -75,6 +77,13 @@ async fn apy_asset_route(param: web::Path<String>) -> impl Responder {
     let asset_symbol = AssetSymbol::from_str(&param.to_uppercase()).unwrap();
     let apy = APY::from_asset(&client, asset_symbol);
     HttpResponse::Ok().json(&apy)
+}
+
+#[get("/info")]
+async fn info_route() -> impl Responder {
+    let client = RpcClient::new_with_timeout(RPC_URL.to_string(), Duration::from_secs(120));
+    let result = Stats::from_assets(&client, &PRODUCTION_ASSETS);
+    HttpResponse::Ok().json(&result)
 }
 
 #[get("/chart_data")]
@@ -213,6 +222,7 @@ fn server_app(tx: mpsc::Sender<Server>) -> std::io::Result<()> {
             .wrap(Logger::default())
             .service(apy_route)
             .service(apy_asset_route)
+            .service(info_route)
             .service(chart_data)
             .service(Files::new("/", folder_name.clone()).index_file("index.html"))
             //.service(Files::new("/", ).index_file("index.html"))
