@@ -8,7 +8,6 @@ use spl_token_lending::state::{Reserve, SLOTS_PER_YEAR};
 use crate::{AssetSymbol, PRODUCTION_CONFIG_JSON, utils::ProgramConfig};
 
 const SLND_RATE: f64 = 0.1585;
-const TOTAL_WEIGHT: u8 = 11;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct APY {
@@ -108,8 +107,9 @@ impl APY {
 
     fn calculate_annual_tokens(reserve: &Reserve, asset_symbol: AssetSymbol) -> (f64, f64, u8) {
         let program_config : ProgramConfig = serde_json::from_str(PRODUCTION_CONFIG_JSON).unwrap();
-        let reserve_json = program_config.markets[0].reserves.iter().find(|e| e.asset == asset_symbol).unwrap();
+        let reserve_json = program_config.markets[0].reserves.iter().find(|r| r.asset == asset_symbol).unwrap();
         let weight = if let Some(weight) = reserve_json.weight { weight } else { 0 };
+        let total_weight = program_config.markets[0].reserves.iter().map(|r| r.weight.unwrap_or(0)).sum::<u8>();
 
         if weight != 0 {
             let market_price = (reserve.liquidity.market_price.to_scaled_val().unwrap() as f64) / 1_000_000_000_000_000_000f64;
@@ -119,7 +119,7 @@ impl APY {
             let mint_decimals = reserve.liquidity.mint_decimals.into();
 
             // TODO: Clean calculations
-            let reward_split = weight as f64 / TOTAL_WEIGHT as f64;
+            let reward_split = weight as f64 / total_weight as f64;
             let supply_reward_per_thousand = SLND_RATE * (reward_split / 2.0) / (total_supply as f64 / 1000.0) * 10_f64.powi(mint_decimals); 
             let borrow_reward_per_thousand = SLND_RATE * (reward_split / 2.0) / (borrowed_ammount as f64 / 1000.0) * 10_f64.powi(mint_decimals); 
             let supply_reward = supply_reward_per_thousand * SLOTS_PER_YEAR as f64;
