@@ -110,6 +110,13 @@ export default {
     // GET /info request using fetch with async/await
     response = await fetch("/info");
     let info_data = await response.json();
+
+    // Override slnd price with coingeck price
+    // TODO: Change this to a more clean version on the rust backend
+    response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=solend&vs_currencies=usd");
+    let solend_price = await response.json();
+    info_data["slnd_price"] = solend_price["solend"]["usd"];
+
     this.info_data_cache = JSON.stringify(info_data);
     this.info = info_data;
 
