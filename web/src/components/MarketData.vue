@@ -41,7 +41,7 @@
             <b-col cols="4" class="stats-token-container">
               <img class="stats-logo" :src="require(`@/assets/logo_slnd.png`)"/>
               <div class="stats-col">
-                <div class="stats-name">SLND price (<span class="stats-ido">IDO</span>)</div>
+                <div class="stats-name">SLND price<!--(<span class="stats-ido">IDO</span>)--></div>
                 <div class="stats-value">{{ format_currency_value(info.slnd_price) }}</div>
               </div>
             </b-col>
@@ -110,13 +110,6 @@ export default {
     // GET /info request using fetch with async/await
     response = await fetch("/info");
     let info_data = await response.json();
-
-    // Override slnd price with coingeck price
-    // TODO: Change this to a more clean version on the rust backend
-    response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=solend&vs_currencies=usd");
-    let solend_price = await response.json();
-    info_data["slnd_price"] = solend_price["solend"]["usd"];
-
     this.info_data_cache = JSON.stringify(info_data);
     this.info = info_data;
 
@@ -133,7 +126,7 @@ export default {
           return "$" + ((parseFloat(value) / 1000000).toFixed(0)) + "M"
       },
 
-    /*         take_screenshot: function () {
+    /*  take_screenshot: function () {
           let markets_container = document.getElementById('markets-container');
           html2canvas(markets_container).then(function(canvas) {
             let a = document.createElement('a');
