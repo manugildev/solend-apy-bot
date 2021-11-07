@@ -13,9 +13,7 @@
           <div>
             <span class="market-apy"> {{ format_percent_value(apy.supply) }} </span> <br/>
             <span class="market-reward">
-              {{ format_reward_value(apy.supply_rewards) }}
-              <img alt="solend token" class="market-slnd-token" src="@/assets/logo_slnd.png">
-              / $1k
+              ( {{ format_reward_value(apy.supply_rewards) }} <img alt="solend token" class="market-slnd-token" src="@/assets/logo_slnd.png"> )
             </span>
           </div>
         </b-col>
@@ -24,9 +22,7 @@
           <div>
             <span class="market-apy"> {{ format_percent_value(apy.borrow) }} </span> <br/>
             <span class="market-reward">
-              {{ format_reward_value(apy.borrow_rewards) }}
-              <img alt="solend token" class="market-slnd-token" src="@/assets/logo_slnd.png">
-              / $1k
+              ( {{ format_reward_value(apy.borrow_rewards) }} <img alt="solend token" class="market-slnd-token" src="@/assets/logo_slnd.png"> )
             </span>
           </div>
         </b-col>
@@ -57,7 +53,7 @@ export default {
         },
         format_reward_value: function(value){
             if(!value) { return 0}
-            return "+ " + (parseFloat(value).toFixed(1))
+            return (parseFloat(value * 100).toFixed(1)) + "%"
         },
     }
 };

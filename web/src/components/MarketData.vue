@@ -41,7 +41,7 @@
             <b-col cols="4" class="stats-token-container">
               <img class="stats-logo" :src="require(`@/assets/logo_slnd.png`)"/>
               <div class="stats-col">
-                <div class="stats-name">SLND price (<span class="stats-ido">IDO</span>)</div>
+                <div class="stats-name">SLND price<!--(<span class="stats-ido">IDO</span>)--></div>
                 <div class="stats-value">{{ format_currency_value(info.slnd_price) }}</div>
               </div>
             </b-col>
@@ -126,7 +126,7 @@ export default {
           return "$" + ((parseFloat(value) / 1000000).toFixed(0)) + "M"
       },
 
-    /*         take_screenshot: function () {
+    /*  take_screenshot: function () {
           let markets_container = document.getElementById('markets-container');
           html2canvas(markets_container).then(function(canvas) {
             let a = document.createElement('a');

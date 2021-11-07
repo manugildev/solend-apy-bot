@@ -1,11 +1,14 @@
-use std::{ops::Mul, str::FromStr};
 use log::info;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use solana_client::rpc_client::RpcClient;
-use solana_sdk::{program_pack::Pack, pubkey::Pubkey};
+use solana_sdk::{program_pack::Pack, pubkey::Pubkey, account_info::IntoAccountInfo};
 use spl_token_lending::state::Reserve;
+use std::{ops::Mul, str::FromStr};
+use switchboard_program::{self, AggregatorState, RoundResult};
 
-use crate::{AssetSymbol, PRODUCTION_CONFIG_JSON, utils::ProgramConfig};
+use crate::{utils::ProgramConfig, AssetSymbol, PRODUCTION_CONFIG_JSON};
+
+const SLND_FEED_ACCOUNT: &'static str = "7QKyBR3zLRhoEH5UMjcG8emDD2J2CCDmkxv3qsa2Mqif";
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Stats {
@@ -16,11 +19,15 @@ pub struct Stats {
 
 impl Stats {
     pub fn from_assets(rpc_client: &RpcClient, assets: &Vec<AssetSymbol>) -> Stats {
-        let program_config : ProgramConfig = serde_json::from_str(PRODUCTION_CONFIG_JSON).unwrap();
+        let program_config: ProgramConfig = serde_json::from_str(PRODUCTION_CONFIG_JSON).unwrap();
         // Get all production PubKeys
         let mut account_pks = Vec::<Pubkey>::new();
         for &asset_symbol in assets {
-            let reserve_json= program_config.markets[0].reserves.iter().find(|e| e.asset == asset_symbol).unwrap();
+            let reserve_json = program_config.markets[0]
+                .reserves
+                .iter()
+                .find(|e| e.asset == asset_symbol)
+                .unwrap();
             let reserve_pk = Pubkey::from_str(&reserve_json.address.to_string()).unwrap();
             account_pks.push(reserve_pk);
         }
@@ -52,13 +59,15 @@ impl Stats {
         };
     }
 
-    // TODO: Move this somewherelse as soon as IDO is finished and SLND is minted
-    const IDO_USDC_ADDRESS: &'static str = "GkV2kxCeAU5qZEPqHbKXdqTByLapzKfTWqQRzCz6S3n1"; 
     pub fn get_slnd_price(rpc_client: &RpcClient) -> f64 {
-        info!("Calculate slnd price for ido");
-        let ido_pk = Pubkey::from_str(&Self::IDO_USDC_ADDRESS).unwrap();
-        let account= rpc_client.get_token_account_balance(&ido_pk).unwrap();
-        let total_slnd = 4_000_000 as f64;
-        return (account.ui_amount.unwrap() as f64) / total_slnd;
+        info!("Get slnd price");
+        let slnd_feed_data_pk = Pubkey::from_str(SLND_FEED_ACCOUNT).unwrap();
+        let slnd_feed_data_account = rpc_client.get_account(&slnd_feed_data_pk).unwrap();
+        let mut account = (slnd_feed_data_pk, slnd_feed_data_account);
+        let slnd_feed_acc_info = account.into_account_info();
+        let aggregator: AggregatorState = switchboard_program::get_aggregator(&slnd_feed_acc_info).unwrap();
+        let round_result: RoundResult = switchboard_program::get_aggregator_result(&aggregator).unwrap();
+        let price = round_result.result.unwrap_or(0f64);
+        return price;
     }
 }

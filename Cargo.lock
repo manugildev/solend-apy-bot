@@ -4330,8 +4330,10 @@ dependencies = [
  "serde 1.0.130",
  "serde_json",
  "solana-client",
+ "solana-program",
  "solana-sdk",
  "spl-token-lending",
+ "switchboard-program",
  "tokio 1.12.0",
 ]
 
