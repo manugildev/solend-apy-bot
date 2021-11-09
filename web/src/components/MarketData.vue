@@ -213,11 +213,11 @@ export default {
 .market-row {
   align-items: center;
   display: flex;
-  height: 20%; /* 100% / 5 */
+  height: 16.66%; /* 100% / 6 */
 }
 
 .main-row{
-  height: 90%; /* Market header is currently 10% */
+  height: 92%; /* Market header is currently 10% */
 }
 
 /* Button */

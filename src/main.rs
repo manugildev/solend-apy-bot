@@ -58,6 +58,7 @@ static ref PRODUCTION_ASSETS: Vec<AssetSymbol> = [
         (AssetSymbol::RAY),
         (AssetSymbol::SBR),
         (AssetSymbol::MER),
+        (AssetSymbol::mSOL),
     ].iter().cloned().collect();
 }
 
