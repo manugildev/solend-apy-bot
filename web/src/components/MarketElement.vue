@@ -6,14 +6,19 @@
               <div class="market-token-name">{{ apy.name }}</div>
               <div class="market-token-price">{{ format_currency_value(apy.price) }}</div>
             </div>
-            <div class="market-boost" v-if="format_reward_value(apy.borrow_rewards) != 0">{{apy.weight}}x</div>
+            <div class="market-boost" v-if="format_reward_value(apy.supply_rewards) != 0 && apy.asset != 'mSOL'">{{ apy.weight }}x</div>
+            <div class="market-boost market-boost-mnde" v-if="format_reward_value(apy.supply_rewards) != 0 && apy.asset == 'mSOL'">{{ apy.weight }}x + 
+              <img alt="mnde token" class="market-slnd-token" src="@/assets/logo_mnde.png">
+            </div>
         </b-col>
 
         <b-col v-if="format_reward_value(apy.supply_rewards) != 0" class="market-apy-container" cols="3">
           <div>
             <span class="market-apy"> {{ format_percent_value(apy.supply) }} </span> <br/>
             <span class="market-reward">
-              ( {{ format_reward_value(apy.supply_rewards) }} <img alt="solend token" class="market-slnd-token" src="@/assets/logo_slnd.png"> )
+              ( {{ format_reward_value(apy.supply_rewards) }} <img alt="solend token" class="market-slnd-token" src="@/assets/logo_slnd.png"> 
+                {{ apy.asset == 'mSOL' ? '+' : ''}} <img v-if="apy.asset=='mSOL'" alt="solend token" class="market-slnd-token" src="@/assets/logo_mnde.png"> 
+              )
             </span>
           </div>
         </b-col>
@@ -29,7 +34,7 @@
 
         <!-- IF REWARDS 0.00 -->
         <b-col v-if="format_reward_value(apy.supply_rewards) == 0" class="market-apy-container market-apy" cols="3">{{ format_percent_value(apy.supply) }}</b-col>
-        <b-col v-if="format_reward_value(apy.supply_rewards) == 0" class="market-apy-container market-apy" v-bind:class="{'market-borrow-left' : left}" cols="3">
+        <b-col v-if="format_reward_value(apy.supply_rewards) == 0 || apy.asset == 'mSOL'" class="market-apy-container market-apy" v-bind:class="{'market-borrow-left' : left}" cols="3">
           {{ format_percent_value(apy.borrow) }}
         </b-col>
     </b-row>
@@ -82,7 +87,7 @@ export default {
 }
 
 .market-token-col {
-  padding-left: 10px;
+  padding-left: 5px;
   text-align: left!important;
   width: 100%;
 }
@@ -119,11 +124,10 @@ export default {
 
 .market-slnd-token {
   border-radius: 100%;
-  height: 12px;
+  height: 15px;
+  width: 15px;
   margin-bottom: 1px;
-  outline: 1px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
-  width: 12px;
 }
 
 .market-boost {
@@ -136,5 +140,13 @@ export default {
   margin-right: -15px;
   padding: 0px 6px;
   text-shadow: 0px 0px 6px #4D4D4D, 1px 1px 0px #3B3B3B;
+}
+
+.market-boost-mnde {
+  background: linear-gradient(275.27deg, rgb(202, 41, 240) 1.51%, rgb(255, 230, 0) 195.89%);
+  font-size: 16px;
+  min-width: 60px;
+  overflow: hidden;
+  white-space: nowrap;
 }
 </style>

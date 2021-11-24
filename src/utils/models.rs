@@ -109,7 +109,7 @@ impl FromStr for AssetSymbol {
             "MER" => Ok(AssetSymbol::MER),
             "SBR" => Ok(AssetSymbol::SBR),
             "MNGO" => Ok(AssetSymbol::MNGO),
-            "MSOL" => Ok(AssetSymbol::mSOL),
+            "mSOL" | "MSOL" => Ok(AssetSymbol::mSOL),
             "PAI" => Ok(AssetSymbol::PAI),
             "UST" => Ok(AssetSymbol::UST),
             _ => Err(format!("'{}' is not a valid value for AssetSymbol", s)),

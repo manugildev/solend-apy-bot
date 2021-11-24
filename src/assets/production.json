@@ -80,7 +80,7 @@
 			"mintAddress": "Ea5SjE2Y6yvCeW5dYTn7PYMuW5ikXkvbGdcmSnXeaLjS"
 		},
 		{
-			"name": "Marinade SOL",
+			"name": "mSOL",
 			"symbol": "mSOL",
 			"decimals": 9,
 			"mintAddress": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"
@@ -190,7 +190,8 @@
 					"collateralSupplyAddress": "FG7yuhS6udX8v2LQYxqwpcsdC2J1pUREoGrRYsQjr1uh",
 					"liquidityAddress": "3R5SVe3qABRUYozgeMNVkSotVoa4HhTFFgWgx2G2QMov",
 					"liquidityFeeReceiverAddress": "83r2poRUiqaghyymPtfhhRtHdReFAKbgGGCQajkczW5w",
-					"userSupplyCap": 100000
+					"userSupplyCap": 100000,
+					"weight": 1
 				}
 			]
 		}

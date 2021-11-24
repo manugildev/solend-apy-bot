@@ -24,23 +24,30 @@
         <b-container id="stats-container">
           <b-row class="stats-row">
 
-            <b-col cols="4" class="separator-left">
+            <b-col cols="3" class="separator-left">
               <div class="stats-col">
-                <div class="stats-name">Total assets supplied</div>
+                <div class="stats-name">Total supply</div>
                 <div class="stats-value">{{ format_millions_value(info.total_supplied) }}</div>
               </div>
             </b-col>
 
-            <b-col cols="4" class="separator-left">
+            <b-col cols="3" class="separator-left">
               <div class="stats-col">
-                <div class="stats-name">Total assets borrowed</div>
+                <div class="stats-name">Total borrow</div>
                 <div class="stats-value">{{ format_millions_value(info.total_borrowed) }}</div>
               </div>
             </b-col>
 
-            <b-col cols="4" class="stats-token-container">
-              <img class="stats-logo" :src="require(`@/assets/logo_slnd.png`)"/>
+            <b-col cols="3" class="separator-left">
               <div class="stats-col">
+                <div class="stats-name">TVL</div>
+                <div class="stats-value">{{ format_millions_value(info.total_supplied-info.total_borrowed) }}</div>
+              </div>
+            </b-col>
+
+            <b-col cols="3" class="stats-token-container">
+              <img class="stats-logo" :src="require(`@/assets/logo_slnd.png`)"/>
+              <div class="stats-col" style="padding-left: 10px;">
                 <div class="stats-name">SLND price<!--(<span class="stats-ido">IDO</span>)--></div>
                 <div class="stats-value">{{ format_currency_value(info.slnd_price) }}</div>
               </div>
@@ -68,8 +75,10 @@
 import Vue from "vue";
 import MarketHeader from "./MarketHeader";
 import MarketElement from "./MarketElement";
+import abbreviate from "number-abbreviate";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
+
 
 export default {
   name: "MarketData",
@@ -123,7 +132,9 @@ export default {
       },
       format_millions_value: function(value){
           if(!value) { return "$0M"}
-          return "$" + ((parseFloat(value) / 1000000).toFixed(0)) + "M"
+
+          var decimals = value > 999999999 ? 2: 0;
+          return ("$" + abbreviate(value, decimals)).toUpperCase();
       },
 
     /*  take_screenshot: function () {
@@ -154,7 +165,6 @@ export default {
 }
 
 .stats-col {
-  padding-left: 10px;
   text-align: center!important;
   justify-content: center;
 
@@ -195,7 +205,7 @@ export default {
 
 .stats-value{
   color: #FEFEFE;
-  font-size: 22px;
+  font-size: 20px;
 }
 
 .separator-left {

@@ -8,6 +8,7 @@ use spl_token_lending::state::{Reserve, SLOTS_PER_YEAR};
 use crate::{AssetSymbol, PRODUCTION_CONFIG_JSON, utils::ProgramConfig, Stats};
 
 const SLND_RATE: f64 = 0.1585;
+const MNDE_RATE: f64 = 0.14269371512;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct APY {
@@ -19,6 +20,7 @@ pub struct APY {
     pub supply_rewards: f64,
     pub borrow_rewards: f64,
     pub weight: u8,
+    pub mnde_supply_rewards: Option<f64>,
 }
 
 impl APY {
@@ -59,16 +61,18 @@ impl APY {
         let supply_apy = Self::calculate_supply(&reserve);
         let borrow_apy = Self::calculate_borrow(&reserve);
         let rewards = Self::calculate_annual_tokens(rpc_client, &reserve, asset_symbol);
-        
+        let mnde_supply_rewards = if let Some(value) = rewards.3 { value } else {0f64}; 
+
         return Self {
             asset: asset_symbol,
             name: asset_symbol.name(),
             price: market_price,
-            supply: supply_apy + rewards.0,
+            supply: supply_apy + rewards.0 + mnde_supply_rewards,
             borrow: borrow_apy - rewards.1,
             supply_rewards: rewards.0,
             borrow_rewards: rewards.1,
             weight: rewards.2,
+            mnde_supply_rewards: rewards.3,
         };
     }
 
@@ -105,7 +109,7 @@ impl APY {
         return current_utilization;
     }
 
-    fn calculate_annual_tokens(rpc_client: &RpcClient, reserve: &Reserve, asset_symbol: AssetSymbol) -> (f64, f64, u8) {
+    fn calculate_annual_tokens(rpc_client: &RpcClient, reserve: &Reserve, asset_symbol: AssetSymbol) -> (f64, f64, u8, Option<f64>) {
         let program_config : ProgramConfig = serde_json::from_str(PRODUCTION_CONFIG_JSON).unwrap();
         let reserve_json = program_config.markets[0].reserves.iter().find(|r| r.asset == asset_symbol).unwrap();
         let weight = if let Some(weight) = reserve_json.weight { weight } else { 0 };
@@ -120,18 +124,29 @@ impl APY {
 
             // TODO: Clean calculations
             let slnd_price = Stats::get_slnd_price(rpc_client);
-            let reward_split = weight as f64 / total_weight as f64;
-            let supply_reward_per_dollar = SLND_RATE * (reward_split / 2.0) / (total_supply as f64) * 10_f64.powi(mint_decimals); 
-            let borrow_reward_per_dollar = SLND_RATE * (reward_split / 2.0) / (borrowed_ammount as f64) * 10_f64.powi(mint_decimals); 
+            // - 1 since mSOL only has supply rewards
+            let reward_split = weight as f64 / (total_weight * 2 - 1) as f64;
+            let supply_reward_per_dollar = SLND_RATE * reward_split / (total_supply as f64) * 10_f64.powi(mint_decimals); 
+            let mut borrow_reward_per_dollar = SLND_RATE * reward_split / (borrowed_ammount as f64) * 10_f64.powi(mint_decimals); 
+
+            let mut mnde_supply_reward_apy : Option<f64> = None;
+            if asset_symbol == AssetSymbol::mSOL { 
+                let mnde_price= Stats::get_mnde_price(rpc_client);
+                borrow_reward_per_dollar = 0f64;
+                let mnde_supply_reward_per_dollar = MNDE_RATE / (total_supply as f64) * 10_f64.powi(mint_decimals);
+                let mnde_supply_reward = mnde_supply_reward_per_dollar * SLOTS_PER_YEAR as f64;
+                mnde_supply_reward_apy = Some(mnde_supply_reward * mnde_price);
+            }
+
             let supply_reward = supply_reward_per_dollar * SLOTS_PER_YEAR as f64;
             let borrow_reward= borrow_reward_per_dollar * SLOTS_PER_YEAR as f64;
 
             let supply_reward_apy = supply_reward * slnd_price;
             let borrow_reward_apy= borrow_reward * slnd_price;
 
-            return (supply_reward_apy, borrow_reward_apy, weight);
+            return (supply_reward_apy, borrow_reward_apy, weight, mnde_supply_reward_apy);
         } 
 
-        return (0f64, 0f64, 0);
+        return (0f64, 0f64, 0, None);
     }
 }
