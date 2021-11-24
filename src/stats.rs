@@ -13,6 +13,7 @@ const SLND_FEED_ACCOUNT: &'static str = "7QKyBR3zLRhoEH5UMjcG8emDD2J2CCDmkxv3qsa
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Stats {
     pub slnd_price: f64,
+    pub mnde_price: f64,
     pub total_supplied: f64,
     pub total_borrowed: f64,
 }
@@ -52,8 +53,10 @@ impl Stats {
         info!("Calculate stats from asset");
 
         let slnd_price = Self::get_slnd_price(rpc_client);
+        let mnde_price = Self::get_mnde_price(rpc_client);
         return Stats {
             slnd_price,
+            mnde_price,
             total_supplied,
             total_borrowed,
         };
@@ -69,5 +72,14 @@ impl Stats {
         let round_result: RoundResult = switchboard_program::get_aggregator_result(&aggregator).unwrap();
         let price = round_result.result.unwrap_or(0f64);
         return price;
+    }
+
+    pub fn get_mnde_price(_rpc_client: &RpcClient) -> f64 {
+        info!("Get mnde price");
+        let mnde_url = "https://api.coingecko.com/api/v3/simple/price?ids=marinade&vs_currencies=usd";
+        let body = reqwest::blocking::get(mnde_url).unwrap().text().unwrap();
+        let v: serde_json::Value = serde_json::from_str(&body).unwrap();
+        let price = &v["marinade"]["usd"];
+        return price.as_f64().unwrap_or(0f64);
     }
 }

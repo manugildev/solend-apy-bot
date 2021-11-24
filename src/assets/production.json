@@ -80,7 +80,7 @@
 			"mintAddress": "Ea5SjE2Y6yvCeW5dYTn7PYMuW5ikXkvbGdcmSnXeaLjS"
 		},
 		{
-			"name": "Marinade staked SOL",
+			"name": "mSOL",
 			"symbol": "mSOL",
 			"decimals": 9,
 			"mintAddress": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"
@@ -145,7 +145,7 @@
 					"collateralSupplyAddress": "D52HyVBEMWy2WBptV5zsPuYS8W8C62gYjYKuVzaK1ruM",
 					"liquidityAddress": "4JHVBtmMPFyRpidxHtM8gVjGuLBXhaXCF4jNFFKBdGpb",
 					"liquidityFeeReceiverAddress": "AkwRd7hZ35BmnYvj9S5PgVpiBQfuzxaapshJe9PCN5hh",
-					"userSupplyCap": 100000
+					"userSupplyCap": 200000
 				},
 				{
 					"asset": "FTT",
@@ -154,7 +154,7 @@
 					"collateralSupplyAddress": "HbMugfk2UDNoCiBUqgXdPu75ksMZHvkJjRZ8YKrcPwz2",
 					"liquidityAddress": "9ZdwVAZsqFWtzNNGZhmQJttYQxTCVPRnaXMgA2KrQpLK",
 					"liquidityFeeReceiverAddress": "J4Zttvtnt2ECLyyEaxQRywAQEN4xcbHsgMF1Fhgdyow9",
-					"userSupplyCap": 200000
+					"userSupplyCap": 500000
 				},
 				{
 					"asset": "RAY",
@@ -163,7 +163,7 @@
 					"collateralSupplyAddress": "6uEjo58ecepRyYnKRLdAMRn8ic3oJJxnwMBH96ufMSXN",
 					"liquidityAddress": "5JT6EK5wLEYGpAXMY2BXvhoeuQCp93eo4os2EtXwnPG1",
 					"liquidityFeeReceiverAddress": "2E15BsCyBeAu9TwhWKQ9yWj9a4TKoPkv7B1JjNxFF7v7",
-					"userSupplyCap": 1000000
+					"userSupplyCap": 2000000
 				},
 				{
 					"asset": "SBR",
@@ -172,7 +172,7 @@
 					"collateralSupplyAddress": "9wSy4XV4XN1hzp9nuC8TbCc78zDkWgu8tGNABH4cpBG5",
 					"liquidityAddress": "86hiF77ktrdVFU9xFqxsYChRirgs9KCvQDD9g4jT64bJ",
 					"liquidityFeeReceiverAddress": "7mjo1oAYVcAQmysfS64LTYi2ZkKJFveymmhYVasEc1nh",
-					"userSupplyCap": 5000000
+					"userSupplyCap": 10000000
 				},
 				{
 					"asset": "MER",
@@ -182,6 +182,16 @@
 					"liquidityAddress": "CNREdzCSa2X5HQ6xjDZ1jd2XN3nmwTHfQkYj9pWAZuXs",
 					"liquidityFeeReceiverAddress": "8hWXJ8jY6WrnbRM47hJZbstfBz3eX9HtsPTHvv2RJH2D",
 					"userSupplyCap": 4000000
+				},
+				{
+					"asset": "mSOL",
+					"address": "CCpirWrgNuBVLdkP2haxLTbD6XqEgaYuVXixbbpxUB6",
+					"collateralMintAddress": "3JFC4cB56Er45nWVe29Bhnn5GnwQzSmHVf6eUq9ac91h",
+					"collateralSupplyAddress": "FG7yuhS6udX8v2LQYxqwpcsdC2J1pUREoGrRYsQjr1uh",
+					"liquidityAddress": "3R5SVe3qABRUYozgeMNVkSotVoa4HhTFFgWgx2G2QMov",
+					"liquidityFeeReceiverAddress": "83r2poRUiqaghyymPtfhhRtHdReFAKbgGGCQajkczW5w",
+					"userSupplyCap": 100000,
+					"weight": 1
 				}
 			]
 		}
@@ -249,6 +259,12 @@
 				"oracleAddress": "6QAiy88ry7A5RKXDrLc8RCtwkeA8JU1JVqCNVugXa7R2",
 				"priceAddress": "G4AQpTYKH1Fmg38VpFQbv6uKYQMpRhJzNPALhp7hqdrs",
 				"switchboardFeedAddress": "5pHX3fd81SpGywzsw4R12L3Xu3qd418h1PcnHpQAiMWA"
+			},
+			{
+				"asset": "mSOL",
+				"oracleAddress": "BS2iAqT67j8hA9Jji4B8UpL3Nfw9kwPfU5s4qeaf1e7r",
+				"priceAddress": "E4v1BBgoso9s64TQvmyownAVJbhbEPGyzA3qn4n46qj9",
+				"switchboardFeedAddress": "CEPVH2t11KS4CaL3w4YxT9tRiijoGA4VEbnQ97cEpDmQ"
 			}
 		]
 	}

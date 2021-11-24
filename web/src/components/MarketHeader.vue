@@ -29,7 +29,7 @@ export default {
 .header {
   color: #64676D;
   font-size: 16px;
-  height: 10%;
+  height: 8%;
 }
 
 .header-col {

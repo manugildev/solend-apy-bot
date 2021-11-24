@@ -53,6 +53,7 @@ static ref PRODUCTION_ASSETS: Vec<AssetSymbol> = [
         (AssetSymbol::USDT),
         (AssetSymbol::ETH),
         (AssetSymbol::BTC),
+        (AssetSymbol::mSOL),
         (AssetSymbol::SRM),
         (AssetSymbol::FTT),
         (AssetSymbol::RAY),
