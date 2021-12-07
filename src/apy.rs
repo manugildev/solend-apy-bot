@@ -19,7 +19,8 @@ pub struct APY {
     pub borrow: f64,
     pub supply_rewards: f64,
     pub borrow_rewards: f64,
-    pub weight: u8,
+    pub weight_supply: u8,
+    pub weight_borrow: u8,
     pub mnde_supply_rewards: Option<f64>,
 }
 
@@ -61,7 +62,7 @@ impl APY {
         let supply_apy = Self::calculate_supply(&reserve);
         let borrow_apy = Self::calculate_borrow(&reserve);
         let rewards = Self::calculate_annual_tokens(rpc_client, &reserve, asset_symbol);
-        let mnde_supply_rewards = if let Some(value) = rewards.3 { value } else {0f64}; 
+        let mnde_supply_rewards = if let Some(value) = rewards.4 { value } else { 0f64 }; 
 
         return Self {
             asset: asset_symbol,
@@ -71,8 +72,9 @@ impl APY {
             borrow: borrow_apy - rewards.1,
             supply_rewards: rewards.0,
             borrow_rewards: rewards.1,
-            weight: rewards.2,
-            mnde_supply_rewards: rewards.3,
+            weight_supply: rewards.2,
+            weight_borrow: rewards.3,
+            mnde_supply_rewards: rewards.4,
         };
     }
 
@@ -109,13 +111,16 @@ impl APY {
         return current_utilization;
     }
 
-    fn calculate_annual_tokens(rpc_client: &RpcClient, reserve: &Reserve, asset_symbol: AssetSymbol) -> (f64, f64, u8, Option<f64>) {
+    fn calculate_annual_tokens(rpc_client: &RpcClient, reserve: &Reserve, asset_symbol: AssetSymbol) -> (f64, f64, u8, u8, Option<f64>) {
         let program_config : ProgramConfig = serde_json::from_str(PRODUCTION_CONFIG_JSON).unwrap();
         let reserve_json = program_config.markets[0].reserves.iter().find(|r| r.asset == asset_symbol).unwrap();
-        let weight = if let Some(weight) = reserve_json.weight { weight } else { 0 };
-        let total_weight = program_config.markets[0].reserves.iter().map(|r| r.weight.unwrap_or(0)).sum::<u8>();
+        let weight_supply = if let Some(weight) = reserve_json.weight_supply { weight } else { 0 };
+        let weight_borrow= if let Some(weight) = reserve_json.weight_borrow { weight } else { 0 };
+        let total_weight_supply = program_config.markets[0].reserves.iter().map(|r| r.weight_supply.unwrap_or(0)).sum::<u8>();
+        let total_weight_borrow= program_config.markets[0].reserves.iter().map(|r| r.weight_borrow.unwrap_or(0)).sum::<u8>();
+        let total_weight = total_weight_borrow + total_weight_supply;
 
-        if weight != 0 {
+        if weight_supply != 0 || weight_borrow != 0 {
             let market_price = (reserve.liquidity.market_price.to_scaled_val().unwrap() as f64) / 1_000_000_000_000_000_000f64;
             let available_ammount = (reserve.liquidity.available_amount as f64).mul(market_price);
             let borrowed_ammount = (reserve.liquidity.borrowed_amount_wads.try_round_u64().unwrap() as f64).mul(market_price);
@@ -124,10 +129,10 @@ impl APY {
 
             // TODO: Clean calculations
             let slnd_price = Stats::get_slnd_price(rpc_client);
-            // - 1 since mSOL only has supply rewards
-            let reward_split = weight as f64 / (total_weight * 2 - 1) as f64;
-            let supply_reward_per_dollar = SLND_RATE * reward_split / (total_supply as f64) * 10_f64.powi(mint_decimals); 
-            let mut borrow_reward_per_dollar = SLND_RATE * reward_split / (borrowed_ammount as f64) * 10_f64.powi(mint_decimals); 
+            let reward_split_supply = weight_supply as f64 / total_weight as f64;
+            let reward_split_borrow= weight_borrow as f64 / total_weight as f64;
+            let supply_reward_per_dollar = SLND_RATE * reward_split_supply / (total_supply as f64) * 10_f64.powi(mint_decimals); 
+            let mut borrow_reward_per_dollar = SLND_RATE * reward_split_borrow / (borrowed_ammount as f64) * 10_f64.powi(mint_decimals); 
 
             let mut mnde_supply_reward_apy : Option<f64> = None;
             if asset_symbol == AssetSymbol::mSOL { 
@@ -144,9 +149,9 @@ impl APY {
             let supply_reward_apy = supply_reward * slnd_price;
             let borrow_reward_apy= borrow_reward * slnd_price;
 
-            return (supply_reward_apy, borrow_reward_apy, weight, mnde_supply_reward_apy);
+            return (supply_reward_apy, borrow_reward_apy, weight_supply, weight_borrow, mnde_supply_reward_apy);
         } 
 
-        return (0f64, 0f64, 0, None);
+        return (0f64, 0f64, 0, 0, None);
     }
 }

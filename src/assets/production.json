@@ -100,7 +100,7 @@
 					"collateralSupplyAddress": "B1ATuYXNkacjjJS78MAmqu8Lu8PvEPt51u4oBasH1m1g",
 					"liquidityAddress": "8UviNr47S8eL6J3WfDxMRa3hvLta1VDJwNWqsDgtN3Cv",
 					"liquidityFeeReceiverAddress": "5wo1tFpi4HaVKnemqaXeQnBEpezrJXcXvuztYaPhvgC7",
-					"weight": 3
+					"weightBorrow": 6
 				},
 				{
 					"asset": "USDC",
@@ -109,7 +109,7 @@
 					"collateralSupplyAddress": "UtRy8gcEu9fCkDuUrU8EmC7Uc6FZy5NCwttzG7i6nkw",
 					"liquidityAddress": "8SheGtsopRUDzdiD6v6BR9a6bqZ9QwywYQY99Fp5meNf",
 					"liquidityFeeReceiverAddress": "5Gdxn4yquneifE6uk9tK8X4CqHfWKjW2BvYU25hAykwP",
-					"weight": 3
+					"weightBorrow": 6
 				},
 				{
 					"asset": "USDT",
@@ -118,7 +118,7 @@
 					"collateralSupplyAddress": "CXDxj6cepVv9nWh4QYqWS2MpeoVKBLKJkMfo3c6Y1Lud",
 					"liquidityAddress": "3CdpSW5dxM7RTxBgxeyt8nnnjqoDbZe48tsBs9QUrmuN",
 					"liquidityFeeReceiverAddress": "Cpyk5WRGmdK2yFGTJCrmgyABPiNEF5eCyCMMZLxpdkXu",
-					"weight": 1
+					"weightBorrow": 4
 				},
 				{
 					"asset": "ETH",
@@ -127,7 +127,7 @@
 					"collateralSupplyAddress": "2Yv6ZgZ9ccV8bCYD7T5t2kcAQYRbukMKha6NiPQ8cFAT",
 					"liquidityAddress": "B7Lg4cJZHPLFaGdqfaAWG35KFFaEtBMmRAGf98kNaogt",
 					"liquidityFeeReceiverAddress": "8RS6VQM1RcuVUrQmfHgF3RAUPCbsbmejgbvTLvr8ZgrV",
-					"weight": 2
+					"weightBorrow": 4
 				},
 				{
 					"asset": "BTC",
@@ -136,7 +136,7 @@
 					"collateralSupplyAddress": "9HrQ9RuRsHjKXuAbZzMHMrYuyq62LjY3B7EBWkM4Uyke",
 					"liquidityAddress": "4jkyJVWQm8NUkiJFJQx6ZJQhfKLGpeZsNrXoT4bAPrRv",
 					"liquidityFeeReceiverAddress": "9CjhBpwiQbP2zYnj7PqHTxPPp2BCR4Y4rP4ZPWkqrCQk",
-					"weight": 2
+					"weightBorrow": 4
 				},
 				{
 					"asset": "SRM",
@@ -191,7 +191,7 @@
 					"liquidityAddress": "3R5SVe3qABRUYozgeMNVkSotVoa4HhTFFgWgx2G2QMov",
 					"liquidityFeeReceiverAddress": "83r2poRUiqaghyymPtfhhRtHdReFAKbgGGCQajkczW5w",
 					"userSupplyCap": 100000,
-					"weight": 1
+					"weightSupply": 1
 				}
 			]
 		}

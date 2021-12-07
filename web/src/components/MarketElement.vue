@@ -1,19 +1,21 @@
 <template>
     <b-row class="market-row" >
-        <b-col class="market-token" cols="6">
+        <b-col class="market-token" cols="4">
             <img class="market-icon" :src="require(`@/assets/logo_${apy.asset.toLowerCase()}.png`)"/>
             <div class="market-token-col">
               <div class="market-token-name">{{ apy.name }}</div>
               <div class="market-token-price">{{ format_currency_value(apy.price) }}</div>
             </div>
-            <div class="market-boost" v-if="format_reward_value(apy.supply_rewards) != 0 && apy.asset != 'mSOL'">{{ apy.weight }}x</div>
-            <div class="market-boost market-boost-mnde" v-if="format_reward_value(apy.supply_rewards) != 0 && apy.asset == 'mSOL'">{{ apy.weight }}x + 
-              <img alt="mnde token" class="market-slnd-token" src="@/assets/logo_mnde.png">
-            </div>
         </b-col>
 
-        <b-col v-if="format_reward_value(apy.supply_rewards) != 0" class="market-apy-container" cols="3">
+        <b-col v-if="apy.weight_supply == 0" class="market-apy-container market-apy" cols="4">{{ format_percent_value(apy.supply) }}</b-col>
+        <b-col v-else class="market-apy-container" cols="4">
           <div>
+            <div class="market-boost" v-if="apy.weight_supply != 0 && apy.asset != 'mSOL'">{{ apy.weight_supply }}x</div>
+            <div class="market-boost market-boost-mnde" v-if="(apy.weight_supply) != 0 || apy.weight_borrow != 0 != 0 && apy.asset == 'mSOL'">{{ apy.weight_borrow + apy.weight_supply }}x + 
+              <img alt="mnde token" class="market-slnd-token" src="@/assets/logo_mnde.png">
+            </div>
+
             <span class="market-apy"> {{ format_percent_value(apy.supply) }} </span> <br/>
             <span class="market-reward">
               ( {{ format_reward_value(apy.supply_rewards) }} <img alt="solend token" class="market-slnd-token" src="@/assets/logo_slnd.png"> 
@@ -23,18 +25,16 @@
           </div>
         </b-col>
 
-        <b-col v-if="format_reward_value(apy.borrow_rewards) != 0" class="market-apy-container" cols="3" v-bind:class="{'market-borrow-left' : left}">
+        <b-col v-if="apy.weight_borrow != 0" class="market-apy-container" cols="4" v-bind:class="{'market-borrow-left' : left}">
           <div>
+            <div class="market-boost" v-if="apy.weight_borrow != 0 && apy.asset != 'mSOL'">{{ apy.weight_borrow }}x</div>
             <span class="market-apy"> {{ format_percent_value(apy.borrow) }} </span> <br/>
             <span class="market-reward">
               ( {{ format_reward_value(apy.borrow_rewards) }} <img alt="solend token" class="market-slnd-token" src="@/assets/logo_slnd.png"> )
             </span>
           </div>
         </b-col>
-
-        <!-- IF REWARDS 0.00 -->
-        <b-col v-if="format_reward_value(apy.supply_rewards) == 0" class="market-apy-container market-apy" cols="3">{{ format_percent_value(apy.supply) }}</b-col>
-        <b-col v-if="format_reward_value(apy.supply_rewards) == 0 || apy.asset == 'mSOL'" class="market-apy-container market-apy" v-bind:class="{'market-borrow-left' : left}" cols="3">
+        <b-col v-else class="market-apy-container market-apy" v-bind:class="{'market-borrow-left' : left}" cols="4">
           {{ format_percent_value(apy.borrow) }}
         </b-col>
     </b-row>
@@ -113,8 +113,8 @@ export default {
 
 .market-apy {
   display: inline-block;
-  font-size: 19px;
-  min-width: 65px;
+  font-size: 17px;
+  min-width: 70px;
 }
 
 .market-reward {
@@ -135,18 +135,20 @@ export default {
   border-radius: 4px;
   color: #FFFFFF;
   display: inline-block;
-  font-size: 19px;
+  font-size: 17px;
   font-weight: bold;
-  margin-right: -15px;
-  padding: 0px 6px;
   text-shadow: 0px 0px 6px #4D4D4D, 1px 1px 0px #3B3B3B;
+  display: inline-block;
+  margin-right: 6px;
+  padding: 0 8px;
 }
 
 .market-boost-mnde {
   background: linear-gradient(275.27deg, rgb(202, 41, 240) 1.51%, rgb(255, 230, 0) 195.89%);
   font-size: 16px;
   min-width: 60px;
-  overflow: hidden;
   white-space: nowrap;
+  margin-right: -12px;
+  padding: 0 8px;
 }
 </style>

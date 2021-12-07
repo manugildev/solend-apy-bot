@@ -40,7 +40,8 @@ pub struct Reserve {
     pub collateral_supply_address: String,
     pub liquidity_address: String,
     pub liquidity_fee_receiver_address: String,
-    pub weight: Option<u8>,
+    pub weight_supply: Option<u8>,
+    pub weight_borrow: Option<u8>,
     pub user_supply_cap: Option<f64>,
 }
 
