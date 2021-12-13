@@ -12,7 +12,7 @@
         <b-col v-else class="market-apy-container" cols="4">
           <div>
             <div class="market-boost" v-if="apy.weight_supply != 0 && apy.asset != 'mSOL'">{{ apy.weight_supply }}x</div>
-            <div class="market-boost market-boost-mnde" v-if="(apy.weight_supply) != 0 || apy.weight_borrow != 0 != 0 && apy.asset == 'mSOL'">{{ apy.weight_borrow + apy.weight_supply }}x + 
+            <div class="market-boost market-boost-mnde" v-if="apy.weight_supply != 0 && apy.asset == 'mSOL'">{{ apy.weight_borrow + apy.weight_supply }}x + 
               <img alt="mnde token" class="market-slnd-token" src="@/assets/logo_mnde.png">
             </div>
 
@@ -135,7 +135,7 @@ export default {
   border-radius: 4px;
   color: #FFFFFF;
   display: inline-block;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: bold;
   text-shadow: 0px 0px 6px #4D4D4D, 1px 1px 0px #3B3B3B;
   display: inline-block;
@@ -145,7 +145,6 @@ export default {
 
 .market-boost-mnde {
   background: linear-gradient(275.27deg, rgb(202, 41, 240) 1.51%, rgb(255, 230, 0) 195.89%);
-  font-size: 16px;
   min-width: 60px;
   white-space: nowrap;
   margin-right: -12px;
