@@ -11,8 +11,8 @@
         <b-col v-if="apy.weight_supply == 0" class="market-apy-container market-apy" cols="4">{{ format_percent_value(apy.supply) }}</b-col>
         <b-col v-else class="market-apy-container" cols="4">
           <div>
-            <div class="market-boost" v-if="apy.weight_supply != 0 && apy.asset != 'mSOL'">{{ apy.weight_supply }}x</div>
-            <div class="market-boost market-boost-mnde" v-if="apy.weight_supply != 0 && apy.asset == 'mSOL'">{{ apy.weight_borrow + apy.weight_supply }}x + 
+            <div class="market-boost" v-if="apy.weight_supply != 0 && apy.asset != 'mSOL'">{{ apy.weight_supply }}</div>
+            <div class="market-boost market-boost-mnde" v-if="apy.weight_supply != 0 && apy.asset == 'mSOL'">{{ apy.weight_borrow + apy.weight_supply }} + 
               <img alt="mnde token" class="market-slnd-token" src="@/assets/logo_mnde.png">
             </div>
 
@@ -27,7 +27,7 @@
 
         <b-col v-if="apy.weight_borrow != 0" class="market-apy-container" cols="4" v-bind:class="{'market-borrow-left' : left}">
           <div>
-            <div class="market-boost" v-if="apy.weight_borrow != 0 && apy.asset != 'mSOL'">{{ apy.weight_borrow }}x</div>
+            <div class="market-boost" v-if="apy.weight_borrow != 0 && apy.asset != 'mSOL'">{{ apy.weight_borrow }}</div>
             <span class="market-apy"> {{ format_percent_value(apy.borrow) }} </span> <br/>
             <span class="market-reward">
               ( {{ format_reward_value(apy.borrow_rewards) }} <img alt="solend token" class="market-slnd-token" src="@/assets/logo_slnd.png"> )
