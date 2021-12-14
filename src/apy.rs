@@ -168,7 +168,7 @@ impl APY {
             let borrow_external_reward_apy : Option<f64> = if borrow_external_reward_apy == 0.0 { None } else { Some(borrow_external_reward_apy) };
             */
 
-            let supply_reward_apy = borrow_reward.0.try_div(10_u64.pow(18)).unwrap().to_scaled_val().unwrap() as f64;
+            let supply_reward_apy = supply_reward.0.try_div(10_u64.pow(18)).unwrap().to_scaled_val().unwrap() as f64;
             let supply_reward_apy = supply_reward_apy * slnd_price / (total_supply as f64) * 10_f64.powi(mint_decimals);
             let borrow_reward_apy = borrow_reward.0.try_div(10_u64.pow(18)).unwrap().to_scaled_val().unwrap() as f64;
             let borrow_reward_apy = borrow_reward_apy * slnd_price / (borrowed_ammount as f64) * 10_f64.powi(mint_decimals);
