@@ -218,7 +218,7 @@ export default {
   background-color: #0F1018;
   border: 1px solid #23242E;
   font-size: 18px;
-  height: 87%;
+  height: 92%; /* 100% - stats-container height (8%)*/
   padding: 0px 20px 0px 20px;
 }
 
