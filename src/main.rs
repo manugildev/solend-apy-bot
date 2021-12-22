@@ -48,6 +48,7 @@ const _DEVNET_CONFIG_JSON: &str = include_str!("assets/devnet.json");
 lazy_static! {
 #[rustfmt::skip]
 static ref PRODUCTION_ASSETS: Vec<AssetSymbol> = [
+        (AssetSymbol::SLND),
         (AssetSymbol::SOL),
         (AssetSymbol::USDC),
         (AssetSymbol::USDT),
@@ -60,7 +61,6 @@ static ref PRODUCTION_ASSETS: Vec<AssetSymbol> = [
         (AssetSymbol::RAY),
         (AssetSymbol::SBR),
         (AssetSymbol::MER),
-        (AssetSymbol::SLND),
     ].iter().cloned().collect();
 }
 
