@@ -40,7 +40,6 @@ pub struct Reserve {
     pub collateral_supply_address: String,
     pub liquidity_address: String,
     pub liquidity_fee_receiver_address: String,
-    pub weight: Option<u8>,
     pub user_supply_cap: Option<f64>,
 }
 
@@ -81,6 +80,10 @@ pub enum AssetSymbol {
     mSOL,
     PAI,
     UST,
+    weWETH,
+    SLND,
+    scnSOL,
+    stSOL,
 }
 
 #[allow(dead_code)]
@@ -97,6 +100,8 @@ impl FromStr for AssetSymbol {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let s = s.to_uppercase();
+        let s = s.as_str();
         match s {
             "SOL" => Ok(AssetSymbol::SOL),
             "USDC" => Ok(AssetSymbol::USDC),
@@ -109,9 +114,13 @@ impl FromStr for AssetSymbol {
             "MER" => Ok(AssetSymbol::MER),
             "SBR" => Ok(AssetSymbol::SBR),
             "MNGO" => Ok(AssetSymbol::MNGO),
-            "mSOL" | "MSOL" => Ok(AssetSymbol::mSOL),
+            "MSOL" => Ok(AssetSymbol::mSOL),
             "PAI" => Ok(AssetSymbol::PAI),
             "UST" => Ok(AssetSymbol::UST),
+            "weETH" => Ok(AssetSymbol::weWETH),
+            "SLND" => Ok(AssetSymbol::SLND),
+            "STSOL" => Ok(AssetSymbol::stSOL),
+            "SCNSOL" => Ok(AssetSymbol::scnSOL),
             _ => Err(format!("'{}' is not a valid value for AssetSymbol", s)),
         }
     }

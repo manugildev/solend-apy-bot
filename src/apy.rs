@@ -3,12 +3,11 @@ use log::info;
 use serde::{Serialize, Deserialize};
 use solana_client::rpc_client::RpcClient;
 use solana_sdk::{program_pack::Pack, pubkey::Pubkey};
-use spl_token_lending::state::{Reserve, SLOTS_PER_YEAR};
+use spl_token_lending::state::Reserve;
+use spl_token_lending::math::{Decimal, TryDiv};
 
+use crate::utils::{TokenRewardStat, Reward};
 use crate::{AssetSymbol, PRODUCTION_CONFIG_JSON, utils::ProgramConfig, Stats};
-
-const SLND_RATE: f64 = 0.1585;
-const MNDE_RATE: f64 = 0.14269371512;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct APY {
@@ -19,7 +18,8 @@ pub struct APY {
     pub borrow: f64,
     pub supply_rewards: f64,
     pub borrow_rewards: f64,
-    pub weight: u8,
+    pub weight_supply: String,
+    pub weight_borrow: String,
     pub mnde_supply_rewards: Option<f64>,
 }
 
@@ -34,13 +34,18 @@ impl APY {
             account_pks.push(reserve_pk);
         }
 
+        let reward_stats : serde_json::Value = reqwest::blocking::get("https://api.solend.fi/liquidity-mining/reward-stats").unwrap().json().unwrap();
+        let external_reward_stats : serde_json::Value = reqwest::blocking::get("https://api.solend.fi/liquidity-mining/external-reward-stats").unwrap().json().unwrap();
+        let slnd_price = Stats::get_slnd_price(rpc_client);
+        let mnde_price = Stats::get_mnde_price(rpc_client);
+
         let accounts = rpc_client.get_multiple_accounts(&account_pks).unwrap();
         let mut result = Vec::<APY>::new();
         for (index, account) in accounts.iter().enumerate() {
             let data = account.as_ref().unwrap().data.clone();
             let reserve = Reserve::unpack_from_slice(&data).unwrap();
             let asset_symbol = assets[index];
-            result.push(Self::from_reserve(rpc_client, &reserve, asset_symbol));
+            result.push(Self::from_reserve(&reserve, asset_symbol, &reward_stats, &external_reward_stats, slnd_price, mnde_price));
         }
         return result;
     }
@@ -51,17 +56,21 @@ impl APY {
         let reserve_pk = Pubkey::from_str(&reserve_json.address.to_string()).unwrap();
         let account_data = rpc_client.get_account_data(&reserve_pk).unwrap();
         let reserve = Reserve::unpack_from_slice(&account_data).unwrap();
+        let reward_stats : serde_json::Value = reqwest::blocking::get("https://api.solend.fi/liquidity-mining/reward-stats").unwrap().json().unwrap();
+        let external_reward_stats : serde_json::Value = reqwest::blocking::get("https://api.solend.fi/liquidity-mining/external-reward-stats").unwrap().json().unwrap();
+        let slnd_price = Stats::get_slnd_price(rpc_client);
+        let mnde_price = Stats::get_slnd_price(rpc_client);
         
-        return Self::from_reserve(rpc_client, &reserve, asset_symbol);
+        return Self::from_reserve(&reserve, asset_symbol, &reward_stats, &external_reward_stats, slnd_price, mnde_price);
     }
 
-    fn from_reserve(rpc_client: &RpcClient, reserve: &Reserve, asset_symbol: AssetSymbol) -> Self {
+    fn from_reserve(reserve: &Reserve, asset_symbol: AssetSymbol, reward_stats: &serde_json::Value, external_reward_stats: &serde_json::Value, slnd_price: f64, mnde_price: f64) -> Self {
         info!("Calculate {} APY", asset_symbol);
         let market_price = (reserve.liquidity.market_price.to_scaled_val().unwrap() as f64) / 1_000_000_000_000_000_000f64;
         let supply_apy = Self::calculate_supply(&reserve);
         let borrow_apy = Self::calculate_borrow(&reserve);
-        let rewards = Self::calculate_annual_tokens(rpc_client, &reserve, asset_symbol);
-        let mnde_supply_rewards = if let Some(value) = rewards.3 { value } else {0f64}; 
+        let rewards = Self::calculate_annual_tokens(&reserve, asset_symbol, &reward_stats, &external_reward_stats, slnd_price, mnde_price);
+        let mnde_supply_rewards = if let Some(value) = rewards.4 { value } else { 0f64 }; 
 
         return Self {
             asset: asset_symbol,
@@ -71,8 +80,9 @@ impl APY {
             borrow: borrow_apy - rewards.1,
             supply_rewards: rewards.0,
             borrow_rewards: rewards.1,
-            weight: rewards.2,
-            mnde_supply_rewards: rewards.3,
+            weight_supply: rewards.2,
+            weight_borrow: rewards.3,
+            mnde_supply_rewards: rewards.4,
         };
     }
 
@@ -109,44 +119,79 @@ impl APY {
         return current_utilization;
     }
 
-    fn calculate_annual_tokens(rpc_client: &RpcClient, reserve: &Reserve, asset_symbol: AssetSymbol) -> (f64, f64, u8, Option<f64>) {
+    fn calculate_annual_tokens(reserve: &Reserve, asset_symbol: AssetSymbol, reward_stats: &serde_json::Value, external_reward_stats: &serde_json::Value, slnd_price: f64, mnde_price: f64) -> (f64, f64, String, String, Option<f64>) {
         let program_config : ProgramConfig = serde_json::from_str(PRODUCTION_CONFIG_JSON).unwrap();
-        let reserve_json = program_config.markets[0].reserves.iter().find(|r| r.asset == asset_symbol).unwrap();
-        let weight = if let Some(weight) = reserve_json.weight { weight } else { 0 };
-        let total_weight = program_config.markets[0].reserves.iter().map(|r| r.weight.unwrap_or(0)).sum::<u8>();
 
-        if weight != 0 {
+        let mint_address = &program_config.assets.iter().find(|a| a.symbol == asset_symbol).unwrap().mint_address;
+
+        // Reward Rates
+        let token_reward_stats = &reward_stats[mint_address];
+        // TODO: Move this to ::from_value()
+        let token_reward_stats = TokenRewardStat {
+            supply: serde_json::from_value(token_reward_stats["supply"].clone()).unwrap(), 
+            borrow: serde_json::from_value(token_reward_stats["borrow"].clone()).unwrap(), 
+        };
+
+        let supply_reward: (Decimal, String) = get_reward_rate_and_name(token_reward_stats.supply);
+        let borrow_reward: (Decimal, String) = get_reward_rate_and_name(token_reward_stats.borrow);
+
+        // External Reward Rates
+        let token_external_reward_stats = &external_reward_stats[mint_address];
+        let token_external_reward_stats = TokenRewardStat {
+            supply: serde_json::from_value(token_external_reward_stats["supply"].clone()).unwrap(), 
+            borrow: serde_json::from_value(token_external_reward_stats["borrow"].clone()).unwrap(), 
+        };
+
+        let supply_external_reward: (Decimal, String) = get_reward_rate_and_name(token_external_reward_stats.supply);
+        let borrow_external_reward: (Decimal, String) = get_reward_rate_and_name(token_external_reward_stats.borrow);
+
+        if !supply_reward.1.is_empty() || !borrow_reward.1.is_empty() {
             let market_price = (reserve.liquidity.market_price.to_scaled_val().unwrap() as f64) / 1_000_000_000_000_000_000f64;
             let available_ammount = (reserve.liquidity.available_amount as f64).mul(market_price);
             let borrowed_ammount = (reserve.liquidity.borrowed_amount_wads.try_round_u64().unwrap() as f64).mul(market_price);
             let total_supply = available_ammount + borrowed_ammount;
             let mint_decimals = reserve.liquidity.mint_decimals.into();
 
-            // TODO: Clean calculations
-            let slnd_price = Stats::get_slnd_price(rpc_client);
-            // - 1 since mSOL only has supply rewards
-            let reward_split = weight as f64 / (total_weight * 2 - 1) as f64;
-            let supply_reward_per_dollar = SLND_RATE * reward_split / (total_supply as f64) * 10_f64.powi(mint_decimals); 
-            let mut borrow_reward_per_dollar = SLND_RATE * reward_split / (borrowed_ammount as f64) * 10_f64.powi(mint_decimals); 
-
-            let mut mnde_supply_reward_apy : Option<f64> = None;
-            if asset_symbol == AssetSymbol::mSOL { 
-                let mnde_price= Stats::get_mnde_price(rpc_client);
-                borrow_reward_per_dollar = 0f64;
-                let mnde_supply_reward_per_dollar = MNDE_RATE / (total_supply as f64) * 10_f64.powi(mint_decimals);
-                let mnde_supply_reward = mnde_supply_reward_per_dollar * SLOTS_PER_YEAR as f64;
-                mnde_supply_reward_apy = Some(mnde_supply_reward * mnde_price);
+            let mut supply_external_reward_apy : f64 = 0.0;
+            if supply_external_reward.0 != Decimal::zero() || borrow_external_reward.0 != Decimal::zero() {
+                supply_external_reward_apy = supply_external_reward.0.try_div(10_u64.pow(18)).unwrap().to_scaled_val().unwrap() as f64;
+                supply_external_reward_apy = supply_external_reward_apy * mnde_price / (total_supply as f64) * 10_f64.powi(mint_decimals);
             }
+            let supply_external_reward_apy : Option<f64> = if supply_external_reward_apy == 0.0 { None } else { Some(supply_external_reward_apy) };
 
-            let supply_reward = supply_reward_per_dollar * SLOTS_PER_YEAR as f64;
-            let borrow_reward= borrow_reward_per_dollar * SLOTS_PER_YEAR as f64;
+            /* Borrow Rewards not available 
+            let mut borrow_external_reward_apy : f64 = 0.0;
+            if borrow_external_reward.0 != Decimal::zero() || borrow_external_reward.0 != Decimal::zero() {
+                borrow_external_reward_apy = borrow_external_reward.0.try_div(10_u64.pow(18)).unwrap().to_scaled_val().unwrap() as f64;
+                borrow_external_reward_apy = borrow_external_reward_apy * mnde_price / (borrowed_ammount as f64) * 10_f64.powi(mint_decimals);
+            }
+            let borrow_external_reward_apy : Option<f64> = if borrow_external_reward_apy == 0.0 { None } else { Some(borrow_external_reward_apy) };
+            */
 
-            let supply_reward_apy = supply_reward * slnd_price;
-            let borrow_reward_apy= borrow_reward * slnd_price;
+            let supply_reward_apy = supply_reward.0.try_div(10_u64.pow(18)).unwrap().to_scaled_val().unwrap() as f64;
+            let supply_reward_apy = supply_reward_apy * slnd_price / (total_supply as f64) * 10_f64.powi(mint_decimals);
+            let borrow_reward_apy = borrow_reward.0.try_div(10_u64.pow(18)).unwrap().to_scaled_val().unwrap() as f64;
+            let borrow_reward_apy = borrow_reward_apy * slnd_price / (borrowed_ammount as f64) * 10_f64.powi(mint_decimals);
 
-            return (supply_reward_apy, borrow_reward_apy, weight, mnde_supply_reward_apy);
+            return (supply_reward_apy, borrow_reward_apy, supply_reward.1, borrow_reward.1, supply_external_reward_apy);
         } 
 
-        return (0f64, 0f64, 0, None);
+        return (0f64, 0f64, String::new(), String::new(), None);
+    }
+}
+
+fn get_reward_rate_and_name(token_reward_stats: Option<Reward>) -> (Decimal, String) {
+    match token_reward_stats {
+        Some(reward) => {
+            match reward.reward_rates {
+                Some(reward_rate) => {
+                    let last_reward_rate = reward_rate.last().unwrap();
+                    let name = last_reward_rate.name.clone().unwrap_or_default();
+                    (last_reward_rate.reward_rate, name)
+                },
+                None => (Decimal::zero(), String::new())
+            }
+        },
+        None => (Decimal::zero(), String::new())
     }
 }

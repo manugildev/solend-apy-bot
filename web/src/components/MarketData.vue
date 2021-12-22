@@ -1,6 +1,6 @@
 <template>
     <div class="main-container">
-      <b-aspect class="vld-parent" :aspect="'16:9'">
+      <b-aspect class="vld-parent" :aspect="'15:9'">
         <loading :active.sync="is_loading"
                  :is-full-page="full_page"
                  :loader="loader"
@@ -21,40 +21,41 @@
             </b-col>
           </b-row>
         </b-container>
+
         <b-container id="stats-container">
           <b-row class="stats-row">
 
-            <b-col cols="3" class="separator-left">
+            <b-col cols="4" class="separator-left">
               <div class="stats-col">
-                <div class="stats-name">Total supply</div>
-                <div class="stats-value">{{ format_millions_value(info.total_supplied) }}</div>
+                <span class="stats-name">Total supply </span>
+                <span class="stats-value">  {{ format_millions_value(info.total_supplied) }}</span>
               </div>
             </b-col>
 
-            <b-col cols="3" class="separator-left">
+            <b-col cols="4" class="separator-left">
               <div class="stats-col">
-                <div class="stats-name">Total borrow</div>
-                <div class="stats-value">{{ format_millions_value(info.total_borrowed) }}</div>
+                <span class="stats-name">Total borrow </span>
+                <span class="stats-value">  {{ format_millions_value(info.total_borrowed) }}</span>
               </div>
             </b-col>
 
-            <b-col cols="3" class="separator-left">
+            <b-col cols="4">
               <div class="stats-col">
-                <div class="stats-name">TVL</div>
-                <div class="stats-value">{{ format_millions_value(info.total_supplied-info.total_borrowed) }}</div>
+                <span class="stats-name">TVL</span>
+                <span class="stats-value">  {{ format_millions_value(info.total_supplied-info.total_borrowed) }}</span>
               </div>
             </b-col>
 
-            <b-col cols="3" class="stats-token-container">
-              <img class="stats-logo" :src="require(`@/assets/logo_slnd.png`)"/>
+            <!---<b-col cols="3" class="stats-token-container">
+              <img class="stats-logo" :src="require(`@/assets/icon_slnd.png`)"/>
               <div class="stats-col" style="padding-left: 10px;">
-                <div class="stats-name">SLND price<!--(<span class="stats-ido">IDO</span>)--></div>
+                <div class="stats-name">SLND price</div>
                 <div class="stats-value">{{ format_currency_value(info.slnd_price) }}</div>
               </div>
-            </b-col>
+            </b-col>-->
 
           </b-row>
-        </b-container>
+        </b-container> 
       </b-aspect>
     <!--
     <b-container class="button-container">
@@ -160,7 +161,7 @@ export default {
   border-top: 0px;
   display: grid;
   font-size: 18px;
-  height: 13%;
+  height: 8%;
   padding: 0px 20px 0px 20px;
 }
 
@@ -206,6 +207,7 @@ export default {
 .stats-value{
   color: #FEFEFE;
   font-size: 20px;
+  margin-left: 5px;
 }
 
 .separator-left {
@@ -216,14 +218,14 @@ export default {
   background-color: #0F1018;
   border: 1px solid #23242E;
   font-size: 18px;
-  height: 87%;
+  height: 92%; /* 100% - stats-container height (8%)*/
   padding: 0px 20px 0px 20px;
 }
 
 .market-row {
   align-items: center;
   display: flex;
-  height: 16.66%; /* 100% / 6 */
+  height: 14.28%; /* 100% / 6 */
 }
 
 .main-row{

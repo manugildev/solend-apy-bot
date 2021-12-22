@@ -2,11 +2,11 @@
   <b-row class="header">
     <b-col class="header-col" v-for="index in 2" :key="index">
       <b-row class="header-container">
-        <b-col class="header-token" cols="6">
+        <b-col class="header-token" cols="4">
           <span class="header-token-text">Market name</span>
         </b-col>
-        <b-col class="header-apy" cols="3">Supply APY</b-col>
-        <b-col class="header-apy" :class="{'header-borrow-left' : index == 1}" cols="3">Borrow APY</b-col>
+        <b-col class="header-apy" cols="4">Supply APY</b-col>
+        <b-col class="header-apy" :class="{'header-borrow-left' : index == 1}" cols="4">Borrow APY</b-col>
       </b-row>
     </b-col>
   </b-row>

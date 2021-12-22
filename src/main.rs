@@ -41,17 +41,19 @@ use utils::ChartData;
 use utils::config;
 use stats::Stats;
 
-const RPC_URL: &str = "https://api.mainnet-beta.solana.com";
+const RPC_URL: &str = "https://solana-api.projectserum.com/";
 const PRODUCTION_CONFIG_JSON: &str = include_str!("assets/production.json");
 const _DEVNET_CONFIG_JSON: &str = include_str!("assets/devnet.json");
 
 lazy_static! {
 #[rustfmt::skip]
 static ref PRODUCTION_ASSETS: Vec<AssetSymbol> = [
+        (AssetSymbol::SLND),
         (AssetSymbol::SOL),
         (AssetSymbol::USDC),
         (AssetSymbol::USDT),
         (AssetSymbol::ETH),
+        (AssetSymbol::weWETH),
         (AssetSymbol::BTC),
         (AssetSymbol::mSOL),
         (AssetSymbol::SRM),
