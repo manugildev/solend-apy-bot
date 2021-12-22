@@ -90,6 +90,24 @@
             "symbol": "weWETH",
             "decimals": 8,
             "mintAddress": "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs"
+        },
+        {
+            "name": "Solend",
+            "symbol": "SLND",
+            "decimals": 6,
+            "mintAddress": "SLNDpmoWTVADgEdndyvWzroNL7zSi1dF9PC3xHGtPwp"
+        },
+        {
+            "name": "Lido stSOL",
+            "symbol": "stSOL",
+            "decimals": 9,
+            "mintAddress": "7dHbWXmci3dT8UFYWYZweBLXgycu7Y3iL6trKn1Y7ARj"
+        },
+        {
+            "name": "scnSOL",
+            "symbol": "scnSOL",
+            "decimals": 9,
+            "mintAddress": "5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm"
         }
 	],
 	"markets": [
@@ -200,6 +218,30 @@
                     "collateralSupplyAddress": "BtGoQiwEWUZQfNaxSxzBgRikfT1rx3hSkzjQEWvktEMe",
                     "liquidityAddress": "8HAaZSiCbVqrLDQHxg3yey8JWuGbeyC2tNTEmzgmt4C4",
                     "liquidityFeeReceiverAddress": "86FvZEpX1y6pK5E6JPLbhoBvp6P2n1givZiikFGgi6Lj"
+                },
+                {
+                    "asset": "SLND",
+                    "address": "CviGNzD2C9ZCMmjDt5DKCce5cLV4Emrcm3NFvwudBFKA",
+                    "collateralMintAddress": "D3Cu5urZJhkKyNZQQq2ne6xSfzbXLU4RrywVErMA2vf8",
+                    "collateralSupplyAddress": "Cc8DRe9wagmkVBeeeLsjgkAk7fkpyZt7XF8Ts3ddyYXd",
+                    "liquidityAddress": "5pHGhh9pjzHP6fWQF4wQ3CKWpZM3YaerRJYN6RLTtZ5m",
+                    "liquidityFeeReceiverAddress": "FtsXfVZWLgMWJH1owUmLhtET5KW1Ck8oykYXyPMkxFcE"
+                },
+                {
+                    "asset": "stSOL",
+                    "address": "5sjkv6HD8wycocJ4tC4U36HHbvgcXYqcyiPRUkncnwWs",
+                    "collateralMintAddress": "QQ6WK86aUCBvNPkGeYBKikk15sUg6aMUEi5PTL6eB4i",
+                    "collateralSupplyAddress": "9MBrzWjgw1sbca6X2M6YoUCQgN6udVeKp9oLFwuzPY2p",
+                    "liquidityAddress": "7ma18yBbX37RbFHQXiq1XhP6c561nDnYSmF84mwiY7Wo",
+                    "liquidityFeeReceiverAddress": "6N5JTX3hXRwudgbVxbAbMvnrW1GB4QdpFGQgYonaWj4C"
+                },
+                {
+                    "asset": "scnSOL",
+                    "address": "DUExYJG5sc1SQdMMdq6LdUYW9ULXbo2fFFTbedywgjNN",
+                    "collateralMintAddress": "AFq1sSdevxfqWGcmcz7XpPbfjHevcJY7baZf9RkyrzoR",
+                    "collateralSupplyAddress": "7NJCWoLDngquvYcCPzUBLYfpS9F3eox4ibgivEGxXweU",
+                    "liquidityAddress": "5Ynq25D3t124WkQZaaWHBXkWkMGJchVg2sCRgfu1PYbs",
+                    "liquidityFeeReceiverAddress": "6SytVt3JLkB5VdLPxTBd5zZFGGVDXsMhf6AdcajdZTBV"
                 }
 			]
 		}
@@ -279,6 +321,24 @@
                 "oracleAddress": "EMkxjGC1CQ7JLiutDbfYb7UKb3zm9SJcUmr1YicBsdpZ",
                 "priceAddress": "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB",
                 "switchboardFeedAddress": "QJc2HgGhdtW4e7zjvLB1TGRuwEpTre2agU5Lap2UqYz"
+            },
+            {
+                "asset": "SLND",
+                "oracleAddress": "Db72V8dzniWpSDESi7aBmkM4QncooKwDYstG2vS5UtyQ",
+                "priceAddress": "HkGEau5xY1e8REXUFbwvWWvyJGywkgiAZZFpryyraWqJ",
+                "switchboardFeedAddress": "7QKyBR3zLRhoEH5UMjcG8emDD2J2CCDmkxv3qsa2Mqif"
+            },
+            {
+                "asset": "stSOL",
+                "oracleAddress": "nu11111111111111111111111111111111111111111",
+                "priceAddress": "nu11111111111111111111111111111111111111111",
+                "switchboardFeedAddress": "9r2p6vyF8Wp5YB2DASK95yuXEakQth6wmUmV2DpH91WX"
+            },
+            {
+                "asset": "scnSOL",
+                "oracleAddress": "nu11111111111111111111111111111111111111111",
+                "priceAddress": "nu11111111111111111111111111111111111111111",
+                "switchboardFeedAddress": "DpzEKDSszosuzRUdRYzEcEbt6iZ4xhVEANQSRAYDYw8h"
             }
 		]
 	}

@@ -78,12 +78,12 @@ export default {
 
 .market-icon {
   border-radius: 100%;
-  height: 50px;
+  height: 45px;
+  width: 45px;
   margin: 0px 10px;
-  min-height: 50px;
-  min-width: 50px;
+  min-height: 45px;
+  min-width: 45px;
   overflow: hidden;
-  width: 50px;
 }
 
 .market-token-col {
